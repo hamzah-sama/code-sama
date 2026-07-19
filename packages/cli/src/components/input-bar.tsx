@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 import type { TextareaRenderable } from "@opentui/core";
 import { useCommandMenu } from "./command-menu/use-command-menu";
 import type { Command } from "./command-menu/types";
+import { useToast } from "../providers/toast/toast-context";
 
 interface Props {
   onSubmit: (text: string) => void;
@@ -26,6 +27,8 @@ export const InputBar = ({ onSubmit, disabled = false }: Props) => {
     scrollRef,
   } = useCommandMenu();
 
+  const toast = useToast();
+
   const handleTextAreaContentChange = () => {
     const textArea = textAreaRef.current;
     if (!textArea) return;
@@ -42,9 +45,10 @@ export const InputBar = ({ onSubmit, disabled = false }: Props) => {
     if (command.action) {
       command.action({
         exit: () => renderer.destroy(),
+      toast,
       });
     } else {
-      textArea.insertText(command.value + ' ');
+      textArea.insertText(command.value + " ");
     }
   };
 
@@ -118,7 +122,6 @@ export const InputBar = ({ onSubmit, disabled = false }: Props) => {
           ref={textAreaRef}
         />
         <StatusBar />
-        <text>{showCommandMenu ? "true" : "false"}</text>
       </box>
     </box>
   );

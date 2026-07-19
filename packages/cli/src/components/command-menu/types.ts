@@ -1,5 +1,11 @@
+import type {
+  ToastContextValue,
+  ToastOptions,
+} from "../../providers/toast/type";
+
 export type commandContext = {
   exit: () => void;
+  toast: ToastContextValue;
 };
 
 export type Command = {
