@@ -20,8 +20,8 @@ export const commandList: Command[] = [
     },
   },
   {
-    name: "help",
-    description: "Show help information",
+    name: "theme",
+    description: "Change theme",
     value: "/help",
     action: (ctx) => {
       ctx.toast.show({
@@ -73,11 +73,6 @@ export const commandList: Command[] = [
     name: "feedback",
     description: "Provide feedback",
     value: "/feedback",
-    action: (ctx) => {
-      ctx.toast.show({
-        message: "Feedback provided",
-      });
-    },
   },
   {
     name: "report",
