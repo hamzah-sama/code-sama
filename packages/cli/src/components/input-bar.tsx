@@ -14,9 +14,10 @@ import { useKeyboardLayer } from "../providers/keyboard/keyboard-context";
 interface Props {
   onSubmit: (text: string) => void;
   disabled?: boolean;
+  homeScreen?: boolean;
 }
 
-export const InputBar = ({ onSubmit, disabled = false }: Props) => {
+export const InputBar = ({ onSubmit, disabled = false , homeScreen= true}: Props) => {
   const renderer = useRenderer();
   const onSubmitRef = useRef<() => void>(() => {});
   const textAreaRef = useRef<TextareaRenderable>(null);
