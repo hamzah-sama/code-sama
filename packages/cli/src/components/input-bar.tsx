@@ -7,6 +7,9 @@ import type { TextareaRenderable } from "@opentui/core";
 import { useCommandMenu } from "./command-menu/use-command-menu";
 import type { Command } from "./command-menu/types";
 import { useToast } from "../providers/toast/toast-context";
+import { useDialog } from "../providers/dialog/dialog-context";
+import { useTheme } from "../providers/theme/theme-context";
+import { useKeyboardLayer } from "../providers/keyboard/keyboard-context";
 
 interface Props {
   onSubmit: (text: string) => void;
@@ -28,6 +31,10 @@ export const InputBar = ({ onSubmit, disabled = false }: Props) => {
   } = useCommandMenu();
 
   const toast = useToast();
+  const dialog = useDialog();
+  const { colors } = useTheme();
+  const {isTopLayer, setResponder} = useKeyboardLayer();
+
 
   const handleTextAreaContentChange = () => {
     const textArea = textAreaRef.current;
@@ -45,7 +52,8 @@ export const InputBar = ({ onSubmit, disabled = false }: Props) => {
     if (command.action) {
       command.action({
         exit: () => renderer.destroy(),
-      toast,
+        toast,
+        dialog,
       });
     } else {
       textArea.insertText(command.value + " ");
@@ -86,15 +94,28 @@ export const InputBar = ({ onSubmit, disabled = false }: Props) => {
     }
   };
 
+   useEffect(() => {
+    setResponder("base", () => {
+      if (disabled) return false;
+      const textArea = textAreaRef.current;
+      if (textArea && textArea.plainText.length > 0) {
+        textArea.setText("");
+        return true;
+      }
+      return false;
+    });
+    return () => setResponder("base", null);
+  }, [disabled, setResponder]);
+
   return (
-    <box border={["left"]} borderColor="cyan">
+    <box border={["left"]} borderColor={colors.primary}>
       <box
         position="relative"
         justifyContent="center"
         width="100%"
         paddingX={2}
         paddingY={1}
-        backgroundColor="#1a1a24"
+        backgroundColor={colors.surface}
         gap={1}
       >
         {showCommandMenu && (
@@ -104,7 +125,7 @@ export const InputBar = ({ onSubmit, disabled = false }: Props) => {
             bottom="100%"
             left={0}
             width="100%"
-            backgroundColor="#1a1a24"
+            backgroundColor={colors.surface}
             paddingX={2}
           >
             <CommandMenu
@@ -115,7 +136,7 @@ export const InputBar = ({ onSubmit, disabled = false }: Props) => {
           </box>
         )}
         <textarea
-          focused={!disabled}
+          focused={!disabled && !isTopLayer('dialog')}
           placeholder="Ask anything..."
           keyBindings={textAreaKeyBindings}
           onContentChange={handleTextAreaContentChange}

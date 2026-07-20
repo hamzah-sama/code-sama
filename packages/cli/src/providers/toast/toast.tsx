@@ -1,5 +1,6 @@
 import { useTerminalDimensions } from "@opentui/react";
 import type { ToastOptions, ToastVariant } from "./type";
+import { useTheme } from "../theme/theme-context";
 
 interface Props {
   toast: ToastOptions | null;
@@ -7,13 +8,14 @@ interface Props {
 
 export const Toast = ({ toast }: Props) => {
   const { width } = useTerminalDimensions();
+  const { colors } = useTheme();
 
   if (!toast) return null;
 
   const variantColor: Record<ToastVariant, string> = {
-    success: "green",
-    error: "red",
-    info: "yellow",
+    success: colors.success,
+    error: colors.error,
+    info: colors.info,
   };
 
   const borderColor = toast.variant

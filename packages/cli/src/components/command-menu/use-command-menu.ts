@@ -2,8 +2,7 @@ import type { ScrollBoxRenderable } from "@opentui/core";
 import { useRef, useState } from "react";
 import { getCommands } from "./get-command";
 import type { Command } from "./types";
-import { useKeyboard } from "@opentui/react";
-import { commandNavigation } from "./command-navigations";
+import { useCommandNavigation } from "./use-command-navigations";
 
 type UseCommandMenuReturn = {
   showCommandMenu: boolean;
@@ -52,7 +51,7 @@ export const useCommandMenu = (): UseCommandMenuReturn => {
     return command;
   };
 
-  commandNavigation({
+  useCommandNavigation({
     showCommandMenu,
     setShowCommandMenu,
     setSelectedIndex,

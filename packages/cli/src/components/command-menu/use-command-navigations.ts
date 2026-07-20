@@ -11,7 +11,7 @@ interface Props {
   commands: Command[];
 }
 
-export const commandNavigation = ({
+export const useCommandNavigation = ({
   showCommandMenu,
   setShowCommandMenu,
   setSelectedIndex,
