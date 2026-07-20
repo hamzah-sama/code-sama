@@ -1,4 +1,4 @@
-export type Responder = () => void;
+export type Responder = () => boolean;
 export type KeyboardContextValue = {
   push: (layerName: string, responder?: Responder) => void;
   pop: (layerName: string) => void;

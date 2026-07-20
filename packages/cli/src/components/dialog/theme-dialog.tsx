@@ -29,7 +29,7 @@ export const ThemeDialog = () => {
 
   useEffect(() => {
     return () => {
-      if (!confirmedSelectedRef) {
+      if (!confirmedSelectedRef.current) {
         setTheme(originalThemeRef.current);
       }
     };
