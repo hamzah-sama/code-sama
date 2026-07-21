@@ -62,8 +62,6 @@ export const KeyboardProvider = ({ children }: Props) => {
       const responder = responders.current.get(currentLayerName);
       if (responder?.()) return;
     }
-
-    renderer.destroy();
   });
 
   return (
