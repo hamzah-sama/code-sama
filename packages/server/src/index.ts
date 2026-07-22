@@ -6,10 +6,12 @@ const app = new Hono();
 
 app.onError((error, c) => {
   if (error instanceof HTTPException) {
-    return c.json({
-      status: error.status,
-      message: error.message || "Request failed",
-    });
+    return c.json(
+      {
+        error: error.message || "Request failed",
+      },
+      error.status,
+    );
   }
   console.error("Unhandled server error", error);
   return c.json({ error: "Internal server error" }, 500);

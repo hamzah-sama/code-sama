@@ -86,15 +86,8 @@ export const Session = () => {
     return <SessionWrapper inputDisabled onSubmit={() => {}} />;
   }
 
-  const handleSubmit = useCallback(
-    (text: string) => {
-      navigate("/session/new", { state: { message: text } });
-    },
-    [navigate],
-  );
-
   return (
-    <SessionWrapper onSubmit={handleSubmit}>
+    <SessionWrapper onSubmit={() => {}}>
       {session.messages.map((msg) => (
         <ChatMessage key={msg.id} msg={msg} />
       ))}
