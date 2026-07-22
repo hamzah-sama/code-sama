@@ -1,23 +1,24 @@
 {
-  "name": "code-sama/cli",
+  "name": "@code-sama/cli",
   "module": "src/index.tsx",
   "type": "module",
   "private": true,
-  "scripts": {
-    "dev": "bun run --watch src/index.tsx"
-  },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/react": "^19.2.17"
+    "@types/react": "^19.2.17",
+    "@code-sama/server": "workspace:*"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
+    "@code-sama/shared": "workspace:*",
     "@opentui/core": "^0.4.4",
     "@opentui/react": "^0.4.4",
+    "hono": "^4.12.31",
     "opentui-spinner": "^0.0.7",
     "react": "^19.2.6",
-    "react-router": "^8.2.0"
+    "react-router": "^8.2.0",
+    "zod": "^4.4.3"
   }
 }

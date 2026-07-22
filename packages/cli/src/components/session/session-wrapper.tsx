@@ -3,7 +3,7 @@ import { InputBar } from "../input-bar";
 import { Spinner } from "../spinner";
 
 interface Props {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   inputDisabled?: boolean;
   onSubmit: (text: string) => void;
   loading?: boolean;
@@ -13,15 +13,15 @@ export const SessionWrapper = ({
   children,
   inputDisabled = false,
   onSubmit,
-  loading = false,
+  loading
 }: Props) => {
   return (
     <box
       flexDirection="column"
       gap={1}
       flexGrow={1}
-      width={150}
-      height={"100%"}
+      width='100%'
+      height="100%"
       paddingY={1}
       paddingX={2}
     >
@@ -37,25 +37,23 @@ export const SessionWrapper = ({
       </box>
       <box
         flexShrink={0}
-        paddingY={1}
-        paddingX={2}
-        justifyContent="space-between"
         flexDirection="row"
-        width={"100%"}
-        gap={2}
+        justifyContent="space-between"
+        width="100%"
         height={1}
+        gap={2}
+        paddingLeft={1}
       >
-        <box alignItems="center" gap={1} flexDirection="row">
-          {loading ? <Spinner /> : null}
+        <box flexDirection="row" alignItems="center" gap={2}>
+          {loading ? (
+            <>
+              <Spinner  />
+            </>
+          ) : null}
         </box>
-        <box
-          alignItems="center"
-          gap={1}
-          flexDirection="row"
-          flexShrink={0}
-          marginLeft="auto"
-        >
-          <text>tabs</text>
+
+        <box flexDirection="row" gap={1} flexShrink={0} marginLeft="auto">
+          <text>tab</text>
           <text attributes={TextAttributes.DIM}>agents</text>
         </box>
       </box>

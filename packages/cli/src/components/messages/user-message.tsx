@@ -1,6 +1,6 @@
 import { useTheme } from "../../providers/theme/theme-context";
 
-export const UserMessage = ({ message }: { message: string }) => {
+export const UserMessage = ({ message }: { message: string | null }) => {
   const { colors } = useTheme();
   return (
     <box width="100%" alignItems="center">
