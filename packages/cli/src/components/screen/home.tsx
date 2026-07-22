@@ -7,7 +7,7 @@ export const HomeScreen = () => {
   const navigate = useNavigate();
   const handleSubmit = useCallback(
     (text: string) => {
-      navigate("/session/329-th238g2bg93-", { state: { message: text } });
+      navigate("/session/new", { state: { message: text } });
     },
     [navigate],
   );

@@ -1,0 +1,11 @@
+{
+  "name": "@code-sama/shared",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "zod": "^4.4.3"
+  }
+}
