@@ -1,33 +1,72 @@
-import { TextAttributes } from "@opentui/core";
+import { TextAttributes, type ScrollBoxRenderable } from "@opentui/core";
+import { useKeyboard } from "@opentui/react";
 import { InputBar } from "../input-bar";
 import { Spinner } from "../spinner";
+import { useRef } from "react";
 
 interface Props {
   children?: React.ReactNode;
   inputDisabled?: boolean;
   onSubmit: (text: string) => void;
   loading?: boolean;
+  interrupttible?: boolean;
 }
 
 export const SessionWrapper = ({
   children,
   inputDisabled = false,
   onSubmit,
-  loading
+  loading,
+  interrupttible,
 }: Props) => {
+  const scrollboxRef = useRef<ScrollBoxRenderable>(null);
+
+  useKeyboard((key) => {
+    const scrollbox = scrollboxRef.current;
+
+    if (!scrollbox) return;
+
+    switch (key.name) {
+      case "up":
+        key.preventDefault();
+
+        scrollbox.scrollBy({
+          x: 0,
+          y: -3,
+        });
+        break;
+
+      case "down":
+        key.preventDefault();
+
+        scrollbox.scrollBy({
+          x: 0,
+          y: 3,
+        });
+        break;
+    }
+  });
+
   return (
     <box
       flexDirection="column"
       gap={1}
       flexGrow={1}
-      width='100%'
+      width="100%"
       height="100%"
       paddingY={1}
       paddingX={2}
     >
-      <scrollbox flexGrow={1} width="100%" stickyScroll stickyStart="bottom">
+      <scrollbox
+        ref={scrollboxRef}
+        flexGrow={1}
+        width="100%"
+        stickyScroll
+        stickyStart="bottom"
+      >
         <box>{children}</box>
       </scrollbox>
+
       <box flexShrink={0}>
         <InputBar
           onSubmit={onSubmit}
@@ -35,6 +74,7 @@ export const SessionWrapper = ({
           homeScreen={false}
         />
       </box>
+
       <box
         flexShrink={0}
         flexDirection="row"
@@ -47,7 +87,8 @@ export const SessionWrapper = ({
         <box flexDirection="row" alignItems="center" gap={2}>
           {loading ? (
             <>
-              <Spinner  />
+              <Spinner />
+              {interrupttible && <text>Esc to interrupt</text>}
             </>
           ) : null}
         </box>

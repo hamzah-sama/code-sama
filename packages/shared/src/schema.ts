@@ -34,10 +34,6 @@ export const chartStreamEventSchema = z.discriminatedUnion("type", [
     text: z.string(),
   }),
   z.object({
-    type: z.literal("reasoning-delta"),
-    text: z.string(),
-  }),
-  z.object({
     type: z.literal("tool-call"),
     toolCallId: z.string(),
     toolCallName: z.string(),

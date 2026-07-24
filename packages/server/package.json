@@ -6,9 +6,12 @@
   "type": "module",
   "private": true,
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.18",
+    "@ai-sdk/openai": "^4.0.18",
     "@code-sama/database": "workspace:*",
     "@code-sama/shared": "workspace:*",
     "@hono/zod-validator": "^0.9.0",
+    "ai": "^7.0.35",
     "dotenv": "^17.4.2",
     "hono": "^4.12.31",
     "zod": "^4.4.3"

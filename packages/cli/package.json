@@ -12,13 +12,15 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@code-sama/database": "workspace:*",
     "@code-sama/shared": "workspace:*",
-    "@opentui/core": "^0.4.4",
-    "@opentui/react": "^0.4.4",
+    "@opentui/core": "^0.4.5",
+    "@opentui/react": "^0.4.5",
+    "eventsource-parser": "^3.1.0",
     "hono": "^4.12.31",
     "opentui-spinner": "^0.0.7",
+    "pretty-ms": "^9.3.0",
     "react": "^19.2.6",
-    "react-router": "^8.2.0",
-    "zod": "^4.4.3"
+    "react-router": "^8.2.0"
   }
 }
