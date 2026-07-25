@@ -1,40 +1,22 @@
-import type { InferResponseType } from "hono";
 import { SessionWrapper } from "./session-wrapper";
 import { apiClient } from "../../lib/api-client";
-import { z } from "zod";
-import { UserMessage } from "../messages/user-message";
-import { ErrorMessage } from "../messages/error-message";
-import { BotMessage } from "../messages/bot-message";
-import { useLocation, useNavigate, useParams } from "react-router";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  type SessionData,
+} from "react-router";
 import { useToast } from "../../providers/toast/toast-context";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getErrorMessage } from "../../lib/http-errors";
-
-type SessionData = InferResponseType<
-  (typeof apiClient.session)[":id"]["$get"],
-  200
->;
-
-type message = {
-  msg: SessionData["messages"][number];
-};
+import { z } from "zod";
+import { SessionChat } from "./session-chat";
 
 const sessionLocationSchema = z.object({
   session: z.custom<SessionData>(
     (val) => val !== null && typeof val === "object" && "id" in val,
   ),
 });
-
-const ChatMessage = ({ msg }: message) => {
-  if (msg.role === "USER") {
-    return <UserMessage message={msg.content} />;
-  }
-  if (msg.role === "ERROR") {
-    return <ErrorMessage message={msg.content} />;
-  }
-
-  return <BotMessage content={msg.content} model={msg.model} />;
-};
 
 export const Session = () => {
   const { id } = useParams();
@@ -86,11 +68,5 @@ export const Session = () => {
     return <SessionWrapper inputDisabled onSubmit={() => {}} />;
   }
 
-  return (
-    <SessionWrapper onSubmit={() => {}}>
-      {session.messages.map((msg) => (
-        <ChatMessage key={msg.id} msg={msg} />
-      ))}
-    </SessionWrapper>
-  );
+  return <SessionChat key={session.id} session={session} />;
 };

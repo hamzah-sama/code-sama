@@ -4,7 +4,7 @@ import { createMemoryRouter, RouterProvider } from "react-router";
 import { RootLayout } from "./components/layout/root-layout";
 import { HomeScreen } from "./components/screen/home";
 import { NewSession } from "./components/session/new-session";
-import { Session } from "./components/session/session";
+import { Session } from "./components/session";
 
 const router = createMemoryRouter([
   {
@@ -33,5 +33,6 @@ const AppRouter = () => {
 
 const renderer = await createCliRenderer({
   exitOnCtrlC: false,
+  targetFps: 60,
 });
 createRoot(renderer).render(<AppRouter />);
