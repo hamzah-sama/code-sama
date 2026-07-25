@@ -47,7 +47,10 @@ export const streamAiResponse = async (
     });
 
     for await (const part of result.stream) {
-      if (stream.aborted) return;
+      if (stream.aborted) {
+        await persistInterruptedMessage();
+        return;
+      }
 
       if (part.type === "text-delta") {
         fullText += part.text;
@@ -95,6 +98,10 @@ export const streamAiResponse = async (
     }
 
     const message = error instanceof Error ? error.message : String(error);
+
+    if (fullText.length > 0) {
+      await persistInterruptedMessage();
+    }
 
     await db.message.create({
       data: {

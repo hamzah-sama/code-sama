@@ -28,7 +28,7 @@ export type Message =
   | { id: string; role: "error"; content: string };
 
 export type StreamingState =
-  | { status: "iddle" }
+  | { status: "idle" }
   | {
       status: "streaming";
       parts: ClientMessagePart[];

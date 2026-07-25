@@ -17,6 +17,7 @@
         "pretty-ms": "^9.3.0",
         "react": "^19.2.6",
         "react-router": "^8.2.0",
+        "zod": "^4.4.3",
       },
       "devDependencies": {
         "@code-sama/server": "workspace:*",

@@ -63,7 +63,7 @@ const resolvedSupportedChatModel = (
 };
 
 export const isSupportedChatModel = (model: string): boolean => {
-  return findSupportedChatModel(model) !== null;
+  return findSupportedChatModel(model) !== undefined;
 };
 
 export const resolvedChatModel = (modelName: string): ResolvedModel => {

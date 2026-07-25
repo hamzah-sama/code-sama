@@ -17,7 +17,7 @@ import type {
 export const useChat = (sessionId: string, initialMessages: Message[]) => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [streaming, setStreaming] = useState<StreamingState>({
-    status: "iddle",
+    status: "idle",
   });
 
   const activeStreamRef = useRef<ActiveStream | null>(null);
@@ -70,7 +70,7 @@ export const useChat = (sessionId: string, initialMessages: Message[]) => {
           ...prev,
           {
             id: crypto.randomUUID(),
-            role: "user",
+            role: "assistant",
             content: fullText,
             mode: activeStream.mode,
             model: activeStream.model,
@@ -87,7 +87,7 @@ export const useChat = (sessionId: string, initialMessages: Message[]) => {
     (requestId: string) => {
       if (!isActiveRequest(requestId)) return;
       activeStreamRef.current = null;
-      setStreaming({ status: "iddle" });
+      setStreaming({ status: "idle" });
     },
     [isActiveRequest],
   );
@@ -255,7 +255,7 @@ export const useChat = (sessionId: string, initialMessages: Message[]) => {
       }
 
       activeStreamRef.current = null;
-      setStreaming({ status: "iddle" });
+      setStreaming({ status: "idle" });
       activeStream.controller.abort();
     },
     [captureInterruptedMessage],

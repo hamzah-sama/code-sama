@@ -4,7 +4,7 @@ import { isSupportedChatModel } from "../lib/models";
 import { zValidator } from "@hono/zod-validator";
 
 const submitSchema = z.object({
-  content: z.string(),
+  content: z.string().trim(),
   mode: z.enum(Mode),
   model: z.string().refine(isSupportedChatModel, "Unsupported model"),
 });
