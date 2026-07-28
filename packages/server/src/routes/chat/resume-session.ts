@@ -1,11 +1,11 @@
 import { db } from "@code-sama/database";
-import { getResumableUserMessage } from "../../functions/get-resumable-message";
 import { isSupportedChatModel } from "../../lib/models";
 import { conversationHistory } from "../../functions/conversation-history";
 import { streamSSE } from "hono/streaming";
 import { streamAiResponse } from "../../functions/stream-ai-response";
 import type { ChatStreamEvent } from "@code-sama/shared";
 import { Context } from "hono";
+import { getLastUnansweredUserMessage } from "../../functions/get-resumable-message";
 
 const activeResumeSessionIds = new Set<string>();
 
@@ -31,7 +31,7 @@ export const resumeSession = async (c: ResumeContext) => {
     return c.json({ error: "Session not found" }, 404);
   }
 
-  const resumableMessage = getResumableUserMessage(session.messages);
+  const resumableMessage = getLastUnansweredUserMessage(session.messages);
 
   if (!resumableMessage) {
     return c.json({ error: "Session has no user message to resume" }, 409);
@@ -47,13 +47,22 @@ export const resumeSession = async (c: ResumeContext) => {
   }
 
   if (activeResumeSessionIds.has(sessionId)) {
-    return c.json({ error: "Session already has an active resume" }, 409);
+    return c.json(
+      { error: `Session already has an active resume ${session.title}` },
+      409,
+    );
   }
 
   activeResumeSessionIds.add(sessionId);
 
   const history = conversationHistory(session.messages);
   const abortController = new AbortController();
+
+  const cleanup = () => {
+    if (activeResumeSessionIds.has(sessionId)) {
+      activeResumeSessionIds.delete(sessionId);
+    }
+  };
 
   try {
     return streamSSE(
@@ -72,11 +81,11 @@ export const resumeSession = async (c: ResumeContext) => {
             abortController,
           });
         } finally {
-          activeResumeSessionIds.delete(sessionId);
+          cleanup();
         }
       },
       async (err, stream) => {
-        activeResumeSessionIds.delete(sessionId);
+        cleanup();
         const message = err instanceof Error ? err.message : String(err);
         const errorEvent: ChatStreamEvent = { type: "error", message };
         await stream.writeSSE({
@@ -86,7 +95,7 @@ export const resumeSession = async (c: ResumeContext) => {
       },
     );
   } catch (error) {
-    activeResumeSessionIds.delete(sessionId);
+    cleanup();
     throw error;
   }
 };

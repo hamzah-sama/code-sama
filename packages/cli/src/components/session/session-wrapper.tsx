@@ -10,6 +10,7 @@ interface Props {
   onSubmit: (text: string) => void;
   loading?: boolean;
   interrupttible?: boolean;
+  sessionId: string;
 }
 
 export const SessionWrapper = ({
@@ -18,6 +19,7 @@ export const SessionWrapper = ({
   onSubmit,
   loading,
   interrupttible,
+  sessionId,
 }: Props) => {
   const scrollboxRef = useRef<ScrollBoxRenderable>(null);
 
@@ -71,7 +73,7 @@ export const SessionWrapper = ({
         <InputBar
           onSubmit={onSubmit}
           disabled={inputDisabled}
-          homeScreen={false}
+          sessionId={sessionId}
         />
       </box>
 
@@ -95,7 +97,7 @@ export const SessionWrapper = ({
 
         <box flexDirection="row" gap={1} flexShrink={0} marginLeft="auto">
           <text>tab</text>
-          <text attributes={TextAttributes.DIM}>agents</text>
+          <text attributes={TextAttributes.DIM}>modes</text>
         </box>
       </box>
     </box>

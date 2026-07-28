@@ -1,22 +1,27 @@
+import { ModeDialog } from "../dialog/mode-dialog";
+import { ModelDialog } from "../dialog/model-dialog";
+import { SessionDialog } from "../dialog/session-dialog";
 import { ThemeDialog } from "../dialog/theme-dialog";
-import type { Command } from "./types";
+import { availableChatModel } from "@code-sama/shared";
+import type { Command, commandContext } from "./types";
 
 export const commandList: Command[] = [
   {
     name: "new",
     description: "Start a new conversation",
     value: "/new",
-    action: (ctx) => {
+    action: (ctx: commandContext) => {
       ctx.toast.show({
         message: "New conversation started",
       });
+      ctx.navigate("/session/new", { replace: true });
     },
   },
   {
     name: "exit",
     description: "Exit the application",
     value: "/exit",
-    action: (ctx) => {
+    action: (ctx: commandContext) => {
       ctx.exit();
     },
   },
@@ -24,37 +29,48 @@ export const commandList: Command[] = [
     name: "theme",
     description: "Change theme",
     value: "/theme",
-    action: (ctx) => {
-      ctx.dialog.open({title: 'Select theme', children: <ThemeDialog />});
+    action: (ctx: commandContext) => {
+      ctx.dialog.open({ title: "Select theme", children: <ThemeDialog /> });
     },
   },
   {
-    name: "version",
-    description: "Show version information",
-    value: "/version",
-    action: (ctx) => {
-      ctx.toast.show({
-        message: "Version information shown",
+    name: "sessions",
+    description: "Manage sessions",
+    value: "/sessions",
+    action: (ctx: commandContext) => {
+      ctx.dialog.open({
+        title: "Select session",
+        children: <SessionDialog currentSession={ctx.sessionId}  />,
       });
     },
   },
   {
-    name: "clear",
-    description: "Clear the console",
-    value: "/clear",
-    action: (ctx) => {
-      ctx.toast.show({
-        message: "Console cleared",
+    name: "mode",
+    description: "Change mode",
+    value: "/mode",
+    action: (ctx: commandContext) => {
+      ctx.dialog.open({
+        title: "Select mode",
+        children: (
+          <ModeDialog currentMode={ctx.mode} onSelectMode={ctx.setMode} />
+        ),
       });
     },
   },
   {
-    name: "settings",
-    description: "Open settings",
-    value: "/settings",
-    action: (ctx) => {
-      ctx.toast.show({
-        message: "Settings opened",
+    name: "model",
+    description: "Change model",
+    value: "/model",
+    action: (ctx: commandContext) => {
+      ctx.dialog.open({
+        title: "Select model",
+        children: (
+          <ModelDialog
+            onSelectModel={ctx.setModel}
+            models={availableChatModel}
+            currentModel={ctx.model}
+          />
+        ),
       });
     },
   },
@@ -62,7 +78,7 @@ export const commandList: Command[] = [
     name: "about",
     description: "Show information about the application",
     value: "/about",
-    action: (ctx) => {
+    action: (ctx: commandContext) => {
       ctx.toast.show({
         message: "About information shown",
       });
@@ -77,7 +93,7 @@ export const commandList: Command[] = [
     name: "report",
     description: "Report an issue",
     value: "/report",
-    action: (ctx) => {
+    action: (ctx: commandContext) => {
       ctx.toast.show({
         message: "Issue reported",
       });
@@ -87,7 +103,7 @@ export const commandList: Command[] = [
     name: "update",
     description: "Check for updates",
     value: "/update",
-    action: (ctx) => {
+    action: (ctx: commandContext) => {
       ctx.toast.show({
         message: "Updates checked",
       });
@@ -97,7 +113,7 @@ export const commandList: Command[] = [
     name: "restart",
     description: "Restart the application",
     value: "/restart",
-    action: (ctx) => {
+    action: (ctx: commandContext) => {
       ctx.toast.show({
         message: "Application restarted",
       });
@@ -107,7 +123,7 @@ export const commandList: Command[] = [
     name: "logout",
     description: "Log out of the application",
     value: "/logout",
-    action: (ctx) => {
+    action: (ctx: commandContext) => {
       ctx.toast.show({
         message: "Logged out",
       });
@@ -117,7 +133,7 @@ export const commandList: Command[] = [
     name: "login",
     description: "Log in to the application",
     value: "/login",
-    action: (ctx) => {
+    action: (ctx: commandContext) => {
       ctx.toast.show({
         message: "Logged in",
         variant: "success",
@@ -128,7 +144,7 @@ export const commandList: Command[] = [
     name: "profile",
     description: "View your profile",
     value: "/profile",
-    action: (ctx) => {
+    action: (ctx: commandContext) => {
       ctx.toast.show({
         message: "Profile information shown",
       });
@@ -138,10 +154,10 @@ export const commandList: Command[] = [
     name: "notifications",
     description: "View notifications",
     value: "/notifications",
-    action: (ctx) => {
+    action: (ctx: commandContext) => {
       ctx.toast.show({
         message: "Notifications shown",
       });
     },
   },
-];
+].sort((a, b) => a.name.localeCompare(b.name));

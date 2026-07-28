@@ -39,7 +39,10 @@ export const NewSession = () => {
       try {
         const res = await apiClient.session.$post({
           json: {
-            title: state.message.slice(0, 50),
+            title:
+              state.message.length > 20
+                ? state.message.slice(0, 20) + "..."
+                : state.message,
             cwd: process.cwd(),
             initialMessage: {
               role: "USER",

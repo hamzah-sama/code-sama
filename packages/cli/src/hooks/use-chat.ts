@@ -8,6 +8,7 @@ import { apiClient } from "../lib/api-client";
 import type {
   ActiveStream,
   ClientMessagePart,
+  ClientToolCallPart,
   Message,
   RunStreamParams,
   StreamingState,
@@ -130,6 +131,44 @@ export const useChat = (sessionId: string, initialMessages: Message[]) => {
         }
 
         switch (event.type) {
+          case "reasoning-delta":
+            {
+              const last = parts.at(-1);
+              if (last?.type === "reasoning") {
+                last.text += event.text;
+              } else {
+                parts.push({ type: "reasoning", text: event.text });
+              }
+              emitParts(activeStream.requestId, parts);
+            }
+            break;
+
+          case "tool-call":
+            {
+              parts.push({
+                type: "tool-call",
+                id: event.toolCallId,
+                name: event.toolCallName,
+                args: event.args,
+                status: "calling",
+              });
+              emitParts(activeStream.requestId, parts);
+            }
+            break;
+
+          case "tool-result": {
+            const tc = parts.find(
+              (p): p is ClientToolCallPart =>
+                p.type === "tool-call" && p.id === event.toolCallId,
+            );
+
+            if (tc) {
+              tc.result = event.result;
+              tc.status = "done";
+            }
+            emitParts(activeStream.requestId, parts);
+            break;
+          }
           case "text-delta":
             {
               const last = parts.at(-1);

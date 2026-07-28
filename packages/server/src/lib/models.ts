@@ -5,6 +5,7 @@ import {
   type SupportedProvider,
 } from "@code-sama/shared";
 import type { LanguageModel } from "ai";
+import type { ProviderOptions } from "@ai-sdk/provider-utils";
 
 import { anthropic } from "@ai-sdk/anthropic";
 import { openai } from "@ai-sdk/openai";
@@ -13,33 +14,71 @@ export type ResolvedModel = {
   model: LanguageModel;
   provider: SupportedProvider;
   modelName: SupportedChatModelName;
+  providerOptions?: ProviderOptions;
 };
 
-type SupoortedAntropicModel = Extract<
+type SupportedAntropicModel = Extract<
   SupportedChatModel,
   { provider: "anthropic" }
 >["name"];
 
-type SupoortedOpenAIModel = Extract<
+type SupportedOpenAIModel = Extract<
   SupportedChatModel,
   { provider: "openai" }
 >["name"];
 
+const ANTHROPIC_PROVIDER_OPTIONS: Partial<
+  Record<SupportedAntropicModel, ProviderOptions>
+> = {
+  "claude-opus-4-6": {
+    anthropic: {
+      thinking: {
+        type: "enabled",
+        budgetTokens: 1000,
+      },
+    },
+  },
+  "claude-sonnet-4-6": {
+    anthropic: {
+      thinking: {
+        type: "enabled",
+        budgetTokens: 1000,
+      },
+    },
+  },
+};
+const OPENAI_PROVIDER_OPTIONS: Partial<
+  Record<SupportedOpenAIModel, ProviderOptions>
+> = {
+  "gpt-5.4": {
+    openai: {
+      reasoningSummary: "detailed",
+    },
+  },
+  "gpt-5.4-mini": {
+    openai: {
+      reasoningSummary: "detailed",
+    },
+  },
+};
+
 const resolvedAnthropicModel = (
-  model: SupoortedAntropicModel,
+  model: SupportedAntropicModel,
 ): ResolvedModel => {
   return {
     model: anthropic(model),
     provider: "anthropic",
     modelName: model,
+    providerOptions: ANTHROPIC_PROVIDER_OPTIONS[model],
   };
 };
 
-const resolvedOpenaiModel = (model: SupoortedOpenAIModel): ResolvedModel => {
+const resolvedOpenaiModel = (model: SupportedOpenAIModel): ResolvedModel => {
   return {
     model: openai(model),
     provider: "openai",
     modelName: model,
+    providerOptions: OPENAI_PROVIDER_OPTIONS[model],
   };
 };
 
@@ -74,6 +113,3 @@ export const resolvedChatModel = (modelName: string): ResolvedModel => {
 
   return resolvedSupportedChatModel(model);
 };
-
-
-

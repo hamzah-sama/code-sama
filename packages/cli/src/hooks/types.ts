@@ -2,11 +2,22 @@ import type { Mode } from "@code-sama/database";
 import type { SupportedChatModelName } from "@code-sama/shared";
 import type { ClientResponse } from "hono/client";
 
-export type ClientMessagePart = {
-  type: "text";
-  text: string;
+export type ClientToolCallPart = {
+  type: "tool-call";
+  id: string;
+  name: string;
+  args: Record<string, unknown>;
+  result?: string;
+  status: "calling" | "done";
 };
 
+export type ClientMessagePart =
+  | {
+      type: "reasoning";
+      text: string;
+    }
+  | ClientToolCallPart
+  | { type: "text"; text: string };
 export type Message =
   | {
       id: string;
