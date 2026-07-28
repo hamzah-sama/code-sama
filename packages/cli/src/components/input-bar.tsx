@@ -2,7 +2,7 @@ import { StatusBar } from "./status-bar";
 import { textAreaKeyBindings } from "./key-bindings";
 import { CommandMenu } from "./command-menu";
 import { useRenderer } from "@opentui/react";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import type { TextareaRenderable } from "@opentui/core";
 import { useCommandMenu } from "./command-menu/use-command-menu";
 import type { Command } from "./command-menu/types";
@@ -10,6 +10,11 @@ import { useToast } from "../providers/toast/toast-context";
 import { useDialog } from "../providers/dialog/dialog-context";
 import { useTheme } from "../providers/theme/theme-context";
 import { useKeyboardLayer } from "../providers/keyboard/keyboard-context";
+import { useNavigate } from "react-router";
+import { useMode } from "../providers/mode/mode-context";
+import { useModel } from "../providers/model/model-context";
+import { useKeyboard } from "@opentui/react";
+import { Mode } from "@code-sama/database";
 
 interface Props {
   onSubmit: (text: string) => void;
@@ -17,7 +22,11 @@ interface Props {
   homeScreen?: boolean;
 }
 
-export const InputBar = ({ onSubmit, disabled = false , homeScreen= true}: Props) => {
+export const InputBar = ({
+  onSubmit,
+  disabled = false,
+  homeScreen = true,
+}: Props) => {
   const renderer = useRenderer();
   const onSubmitRef = useRef<() => void>(() => {});
   const textAreaRef = useRef<TextareaRenderable>(null);
@@ -32,10 +41,12 @@ export const InputBar = ({ onSubmit, disabled = false , homeScreen= true}: Props
   } = useCommandMenu();
 
   const toast = useToast();
+  const { toggleMode, mode, setMode } = useMode();
+  const { setModel, model } = useModel();
   const dialog = useDialog();
+  const navigate = useNavigate();
   const { colors } = useTheme();
-  const {isTopLayer, setResponder} = useKeyboardLayer();
-
+  const { isTopLayer, setResponder } = useKeyboardLayer();
 
   const handleTextAreaContentChange = () => {
     const textArea = textAreaRef.current;
@@ -44,22 +55,39 @@ export const InputBar = ({ onSubmit, disabled = false , homeScreen= true}: Props
     handleContentChange(textArea.plainText);
   };
 
-  const handleCommand = (command: Command | undefined) => {
-    const textArea = textAreaRef.current;
-    if (!textArea || !command) return;
+  const handleCommand = useCallback(
+    (command: Command | undefined) => {
+      const textArea = textAreaRef.current;
+      if (!textArea || !command) return;
 
-    textArea.setText("");
+      textArea.setText("");
 
-    if (command.action) {
-      command.action({
-        exit: () => renderer.destroy(),
-        toast,
-        dialog,
-      });
-    } else {
-      textArea.insertText(command.value + " ");
+      if (command.action) {
+        command.action({
+          exit: () => renderer.destroy(),
+          toast,
+          dialog,
+          navigate,
+          mode,
+          setModel,
+          setMode,
+          model
+        });
+      } else {
+        textArea.insertText(command.value + " ");
+      }
+    },
+    [mode, setMode, setModel, dialog, navigate, toast, renderer],
+  );
+
+  useKeyboard((key) => {
+    if (disabled) return;
+    if (!isTopLayer("base")) return;
+    if (key.name === "tab") {
+      key.preventDefault();
+      toggleMode();
     }
-  };
+  });
 
   const handleSubmit = () => {
     if (disabled) return;
@@ -95,7 +123,7 @@ export const InputBar = ({ onSubmit, disabled = false , homeScreen= true}: Props
     }
   };
 
-   useEffect(() => {
+  useEffect(() => {
     setResponder("base", () => {
       if (disabled) return false;
       const textArea = textAreaRef.current;
@@ -109,7 +137,10 @@ export const InputBar = ({ onSubmit, disabled = false , homeScreen= true}: Props
   }, [disabled, setResponder]);
 
   return (
-    <box border={["left"]} borderColor={colors.primary}>
+    <box
+      border={["left"]}
+      borderColor={mode === Mode.BUILD ? colors.primary : colors.planMode}
+    >
       <box
         position="relative"
         justifyContent="center"
@@ -137,7 +168,7 @@ export const InputBar = ({ onSubmit, disabled = false , homeScreen= true}: Props
           </box>
         )}
         <textarea
-          focused={!disabled && !isTopLayer('dialog')}
+          focused={!disabled && !isTopLayer("dialog")}
           placeholder="Ask anything..."
           keyBindings={textAreaKeyBindings}
           onContentChange={handleTextAreaContentChange}

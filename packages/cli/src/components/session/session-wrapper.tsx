@@ -95,7 +95,7 @@ export const SessionWrapper = ({
 
         <box flexDirection="row" gap={1} flexShrink={0} marginLeft="auto">
           <text>tab</text>
-          <text attributes={TextAttributes.DIM}>agents</text>
+          <text attributes={TextAttributes.DIM}>modes</text>
         </box>
       </box>
     </box>

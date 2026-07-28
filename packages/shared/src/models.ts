@@ -70,4 +70,8 @@ export const findSupportedChatModel = (modelName: string) => {
   return SUPPORTED_CHAT_MODELS.find((model) => model.name === modelName);
 };
 
-export const DEFAULT_CHAT_MODEL_NAME : SupportedChatModelName = 'gpt-5.4-mini';
+export const availableChatModel = SUPPORTED_CHAT_MODELS.map(
+  (model) => model.name,
+);
+
+export const DEFAULT_CHAT_MODEL_NAME: SupportedChatModelName = "gpt-5.4-mini";

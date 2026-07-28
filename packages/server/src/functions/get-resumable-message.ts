@@ -6,9 +6,9 @@ type Messages = {
   model: string;
 }[];
 
-export const getResumableUserMessage = (messages: Messages) => {
+export const getLastUnansweredUserMessage = (messages: Messages) => {
   const lastMessage = messages.at(-1);
-  if (!lastMessage || lastMessage.role !== "USER") return null;
+  if (lastMessage?.role !== "USER") return null;
 
   return lastMessage;
 };

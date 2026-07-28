@@ -100,6 +100,7 @@ export const DialogSearchList = <T,>({
             const isSelected = index === selectedIndex;
             return (
               <box
+                flexDirection="row"
                 key={getKey(item)}
                 height={1}
                 overflow="hidden"
