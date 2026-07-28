@@ -12,7 +12,11 @@ import { format } from "date-fns";
 
 type Session = InferResponseType<(typeof apiClient.session)["$get"], 200>[0];
 
-export const SessionDialog = () => {
+interface Props {
+  currentSession?: string;
+}
+
+export const SessionDialog = ({ currentSession }: Props) => {
   const [session, setSession] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
   const { show } = useToast();
@@ -71,13 +75,16 @@ export const SessionDialog = () => {
       items={session}
       placeholder="Select session..."
       emptyText="No matching items"
-      getKey={(item) => item.title}
+      getKey={(item) => item.id}
       filterFn={(item, query) =>
         item.title.toLowerCase().includes(query.toLowerCase())
       }
       renderItem={(session, isSelected) => (
         <>
           <text selectable={false} fg={isSelected ? "black" : "white"}>
+            {session.id === currentSession
+              ? "\u0020\u2022\u0020"
+              : "\u0020\u0020\u0020"}
             {session.title}
           </text>
           <box flexGrow={1} />

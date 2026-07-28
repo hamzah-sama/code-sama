@@ -36,9 +36,12 @@ export const commandList: Command[] = [
   {
     name: "sessions",
     description: "Manage sessions",
-    value: "/version",
+    value: "/sessions",
     action: (ctx: commandContext) => {
-      ctx.dialog.open({ title: "Select session", children: <SessionDialog /> });
+      ctx.dialog.open({
+        title: "Select session",
+        children: <SessionDialog currentSession={ctx.sessionId}  />,
+      });
     },
   },
   {

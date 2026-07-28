@@ -49,6 +49,7 @@ export const SessionChat = ({ session }: Props) => {
       }
       loading={streaming.status === "streaming"}
       interrupttible={streaming.status === "streaming"}
+      sessionId={session.id}
     >
       {messages.map((msg) => (
         <MessageRenderer key={msg.id} message={msg} />

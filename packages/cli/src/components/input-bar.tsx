@@ -19,14 +19,10 @@ import { Mode } from "@code-sama/database";
 interface Props {
   onSubmit: (text: string) => void;
   disabled?: boolean;
-  homeScreen?: boolean;
+  sessionId?: string;
 }
 
-export const InputBar = ({
-  onSubmit,
-  disabled = false,
-  homeScreen = true,
-}: Props) => {
+export const InputBar = ({ onSubmit, disabled = false, sessionId }: Props) => {
   const renderer = useRenderer();
   const onSubmitRef = useRef<() => void>(() => {});
   const textAreaRef = useRef<TextareaRenderable>(null);
@@ -71,13 +67,14 @@ export const InputBar = ({
           mode,
           setModel,
           setMode,
-          model
+          model,
+          sessionId,
         });
       } else {
         textArea.insertText(command.value + " ");
       }
     },
-    [mode, setMode, setModel, dialog, navigate, toast, renderer],
+    [mode, setMode, setModel, dialog, navigate, toast, renderer, model, sessionId],
   );
 
   useKeyboard((key) => {

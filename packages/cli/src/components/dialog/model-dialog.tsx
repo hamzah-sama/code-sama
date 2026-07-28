@@ -26,8 +26,8 @@ export const ModelDialog = ({ currentModel, onSelectModel, models }: Props) => {
   return (
     <DialogSearchList
       items={models}
-      placeholder="Select mode..."
-      emptyText="No matching modes"
+      placeholder="Select model..."
+      emptyText="No matching models"
       getKey={(item) => item}
       filterFn={(item, query) =>
         item.toLowerCase().includes(query.toLowerCase())

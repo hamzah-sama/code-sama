@@ -11,10 +11,12 @@ export type commandContext = {
   toast: ToastContextValue;
   dialog: DialogContextValue;
   navigate: (url: string, options?: { replace?: boolean }) => void;
+  sessionId?: string;
   mode: Mode;
   setMode: (mode: Mode) => void;
   model: SupportedChatModelName;
   setModel: (model: SupportedChatModelName) => void;
+  homescreen?: boolean;
 };
 
 export type Command = {

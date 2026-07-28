@@ -70,7 +70,6 @@ export const resumeSession = async (c: ResumeContext) => {
       async (stream) => {
         stream.onAbort(() => {
           abortController.abort();
-          cleanup();
         });
 
         try {
@@ -86,7 +85,7 @@ export const resumeSession = async (c: ResumeContext) => {
         }
       },
       async (err, stream) => {
-        activeResumeSessionIds.delete(sessionId);
+        cleanup();
         const message = err instanceof Error ? err.message : String(err);
         const errorEvent: ChatStreamEvent = { type: "error", message };
         await stream.writeSSE({
