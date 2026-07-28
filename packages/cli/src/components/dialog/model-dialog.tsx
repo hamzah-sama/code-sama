@@ -13,11 +13,6 @@ interface Props {
 export const ModelDialog = ({ currentModel, onSelectModel, models }: Props) => {
   const { close } = useDialog();
 
-  const availableModels: Mode[] = [Mode.BUILD, Mode.PLAN];
-  const getModeLabel = (mode: Mode) => {
-    return mode === Mode.PLAN ? "Plan" : "Build";
-  };
-
   const handleSelect = useCallback((selectedModel: SupportedChatModelName) => {
     onSelectModel(selectedModel);
     close();

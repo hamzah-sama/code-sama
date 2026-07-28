@@ -123,7 +123,7 @@ export const streamAiResponse = async (
         const resultStr =
           typeof part.output === "string"
             ? part.output
-            : JSON.stringify(part.output);
+            : (JSON.stringify(part.output) ?? "");
 
         const tcPart = parts.find(
           (p): p is Extract<MessagePart, { type: "tool-call" }> =>
