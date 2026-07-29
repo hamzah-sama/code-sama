@@ -42,7 +42,7 @@ const ANTHROPIC_PROVIDER_OPTIONS: Partial<
     anthropic: {
       thinking: {
         type: "enabled",
-        budgetTokens: 1000,
+        budgetTokens: 1200,
       },
     },
   },
@@ -52,7 +52,10 @@ const OPENAI_PROVIDER_OPTIONS: Partial<
 > = {
   "gpt-5.4": {
     openai: {
-      reasoningSummary: "detailed",
+      reasoning: {
+        effort: "high",
+        summary: "detailed",
+      },
     },
   },
   "gpt-5.4-mini": {

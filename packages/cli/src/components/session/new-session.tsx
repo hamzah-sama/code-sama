@@ -4,13 +4,18 @@ import { UserMessage } from "../messages/user-message";
 import { z } from "zod";
 import { useEffect, useMemo, useRef } from "react";
 import { apiClient } from "../../lib/api-client";
-import { DEFAULT_CHAT_MODEL_NAME } from "../../../../shared/src/models";
 import { getErrorMessage } from "../../lib/http-errors";
+import { Mode } from "@code-sama/database";
 import { useToast } from "../../providers/toast/toast-context";
+import { findSupportedChatModel } from "@code-sama/shared";
 
 export const NewSession = () => {
   const newSessionStateSchema = z.object({
     message: z.string(),
+    mode: z.enum(Mode),
+    model: z
+      .string()
+      .refine((name) => !!findSupportedChatModel(name), "Unsupported model"),
   });
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,9 +51,9 @@ export const NewSession = () => {
             cwd: process.cwd(),
             initialMessage: {
               role: "USER",
-              mode: "BUILD",
               content: state.message,
-              model: DEFAULT_CHAT_MODEL_NAME,
+              model: state.model,
+              mode: state.mode,
             },
           },
         });
@@ -83,7 +88,7 @@ export const NewSession = () => {
 
   return (
     <SessionWrapper onSubmit={() => {}} inputDisabled loading>
-      <UserMessage message={state.message} />
+      <UserMessage message={state.message} mode={state.mode} />
     </SessionWrapper>
   );
 };

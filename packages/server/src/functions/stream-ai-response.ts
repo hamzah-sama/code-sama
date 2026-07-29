@@ -2,7 +2,8 @@ import { db, MessageStatus, type Mode } from "@code-sama/database";
 import type { conversationHistory } from "./conversation-history";
 import { streamSSE } from "hono/streaming";
 import { resolvedChatModel } from "../lib/models";
-import { streamText as aiStreamText } from "ai";
+import { streamText as aiStreamText, stepCountIs } from "ai";
+import { createTools } from "../tools";
 import {
   messagePartsSchema,
   toolCallArgsSchema,
@@ -10,11 +11,13 @@ import {
 } from "@code-sama/shared";
 import type { MessagePart } from "@code-sama/shared";
 import { Prisma } from "@code-sama/database";
+import { buildSystemPropmpt } from "../system-prompt";
 
 type StreamParams = {
   mode: Mode;
   model: string;
   sessionId: string;
+  cwd: string | null;
   history: ReturnType<typeof conversationHistory>;
   abortController: AbortController;
 };
@@ -23,8 +26,9 @@ export const streamAiResponse = async (
   stream: Parameters<Parameters<typeof streamSSE>[1]>[0],
   params: StreamParams,
 ) => {
-  const { mode, model, sessionId, history, abortController } = params;
+  const { mode, model, sessionId, history, abortController, cwd } = params;
   const startTime = Date.now();
+  const tools = cwd ? createTools(cwd, mode) : undefined;
   const parts: MessagePart[] = [];
 
   const resolvedModel = resolvedChatModel(model);
@@ -58,7 +62,10 @@ export const streamAiResponse = async (
   try {
     const result = aiStreamText({
       model: resolvedModel.model,
+      system: buildSystemPropmpt({ cwd, mode }),
       messages: history,
+      tools,
+      stopWhen : tools ? stepCountIs(50) : undefined,
       abortSignal: abortController.signal,
       providerOptions: resolvedModel.providerOptions,
     });

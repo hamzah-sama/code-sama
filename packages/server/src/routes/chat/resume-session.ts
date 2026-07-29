@@ -78,6 +78,7 @@ export const resumeSession = async (c: ResumeContext) => {
             model: resumableMessage.model,
             sessionId,
             history,
+            cwd: session.cwd,
             abortController,
           });
         } finally {
