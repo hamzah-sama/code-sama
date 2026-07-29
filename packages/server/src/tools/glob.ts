@@ -11,7 +11,7 @@ export const createGlobTool = (cwd: string) => {
     inputSchema: z.object({
       pattern: z
         .string()
-        .describe("Glob pattern to match (e.g. '**/&.ts', 'src/**/*.tsx')"),
+        .describe("Glob pattern to match (e.g. '**/*.ts', 'src/**/*.tsx')"),
       path: z
         .string()
         .describe("Relative directory to search in (defaults to  project root)")
@@ -40,8 +40,8 @@ export const createGlobTool = (cwd: string) => {
             break;
           }
 
-          const absoluteMatch = resolve(cwd, match);
-          files.push(relative(resolvedPath, absoluteMatch));
+          const absoluteMatch = resolve(resolvedPath, match);
+          files.push(relative(cwd, absoluteMatch));
         }
         files.sort();
         return {

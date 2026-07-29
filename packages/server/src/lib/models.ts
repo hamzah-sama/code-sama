@@ -52,14 +52,13 @@ const OPENAI_PROVIDER_OPTIONS: Partial<
 > = {
   "gpt-5.4": {
     openai: {
-      reasoning: {
-        effort: "high",
-        summary: "detailed",
-      },
+      reasoningEffort: "high",
+      reasoningSummary: "detailed",
     },
   },
   "gpt-5.4-mini": {
     openai: {
+      reasoningEffort: "high",
       reasoningSummary: "detailed",
     },
   },

@@ -35,7 +35,7 @@ export const mapMessages = (messages: SessionData["messages"]): Message[] => {
             ? { ...part, status: "done" as const }
             : part,
         )
-      : [];
+      : msg.content ? [{type: "text", text: msg.content}] : [];
 
     return {
       id: msg.id,

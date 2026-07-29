@@ -37,7 +37,7 @@ export const createEditFileTool = (cwd: string) => {
           };
         }
 
-        const updated = content.replace(oldString, newString);
+        const updated = content.replace(oldString, () => newString);
 
         await writeFile(resolvedPath, updated, "utf8");
 
