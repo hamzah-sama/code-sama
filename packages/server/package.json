@@ -5,7 +5,8 @@
   },
   "scripts": {
     "dev": "bun run --hot src/index.ts",
-    "build": "bun run --cwd ../database db:generate && bun build src/vercel.ts --outdir dist --target node"
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "postinstall": "bun run --cwd ../database db:generate"
   },
   "type": "module",
   "private": true,
