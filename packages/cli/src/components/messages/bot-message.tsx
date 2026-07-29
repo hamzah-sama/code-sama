@@ -77,7 +77,7 @@ export const BotMessage = ({
                   width="100%"
                 >
                   <text attributes={TextAttributes.DIM}>
-                    <em fg={colors.thinking}>Thinking:</em>
+                    <em fg={colors.thinking}>Thinking: </em>
                     {part.text}
                   </text>
                 </box>

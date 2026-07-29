@@ -61,6 +61,7 @@ export const addChat = async (c: AddchatContext) => {
       await streamAiResponse(stream, {
         sessionId,
         model,
+        cwd: session.cwd,
         history,
         mode,
         abortController,

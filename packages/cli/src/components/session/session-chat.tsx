@@ -8,13 +8,16 @@ import { SessionWrapper } from "./session-wrapper";
 import { DEFAULT_CHAT_MODEL_NAME } from "@code-sama/shared";
 import { MessageRenderer } from "./message-renderer";
 import { BotMessage } from "../messages/bot-message";
+import { useMode } from "../../providers/mode/mode-context";
+import { useModel } from "../../providers/model/model-context";
 
-
-interface Props{
-    session : SessionData
+interface Props {
+  session: SessionData;
 }
 
 export const SessionChat = ({ session }: Props) => {
+  const { mode } = useMode();
+  const { model } = useModel();
   const [initialMessages] = useState(() => mapMessages(session.messages));
   const { isTopLayer } = useKeyboardLayer();
   const { messages, streaming, abort, submit, interrupt } = useChat(
@@ -43,13 +46,12 @@ export const SessionChat = ({ session }: Props) => {
       onSubmit={(text) =>
         submit({
           userText: text,
-          mode: "BUILD",
-          model: DEFAULT_CHAT_MODEL_NAME,
+          mode,
+          model,
         })
       }
       loading={streaming.status === "streaming"}
       interrupttible={streaming.status === "streaming"}
-      sessionId={session.id}
     >
       {messages.map((msg) => (
         <MessageRenderer key={msg.id} message={msg} />
@@ -59,7 +61,7 @@ export const SessionChat = ({ session }: Props) => {
           parts={streaming.parts}
           model={streaming.model}
           mode={streaming.mode}
-          streaming = {streaming.status === 'streaming'}
+          streaming={streaming.status === "streaming"}
         />
       )}
     </SessionWrapper>

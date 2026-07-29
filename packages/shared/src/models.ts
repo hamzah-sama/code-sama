@@ -74,4 +74,4 @@ export const availableChatModel = SUPPORTED_CHAT_MODELS.map(
   (model) => model.name,
 );
 
-export const DEFAULT_CHAT_MODEL_NAME: SupportedChatModelName = "gpt-5.4-mini";
+export const DEFAULT_CHAT_MODEL_NAME: SupportedChatModelName = "claude-sonnet-4-6";

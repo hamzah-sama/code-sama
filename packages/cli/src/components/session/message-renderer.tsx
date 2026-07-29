@@ -9,7 +9,7 @@ interface Props {
 
 export const MessageRenderer = ({ message }: Props) => {
   if (message.role === "user") {
-    return <UserMessage message={message.content} />;
+    return <UserMessage message={message.content} mode={message.mode} />;
   }
   if (message.role === "error") {
     return <ErrorMessage message={message.content} />;

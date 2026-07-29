@@ -1,10 +1,20 @@
+import { Mode } from "@code-sama/database";
 import { useTheme } from "../../providers/theme/theme-context";
 
-export const UserMessage = ({ message }: { message: string | null }) => {
+interface Props {
+  message: string | null;
+  mode: Mode;
+}
+
+export const UserMessage = ({ message, mode }: Props) => {
   const { colors } = useTheme();
   return (
     <box width="100%" alignItems="center">
-      <box borderColor={colors.primary} border={["left"]} width="100%">
+      <box
+        borderColor={mode === Mode.PLAN ? colors.planMode : colors.primary}
+        border={["left"]}
+        width="100%"
+      >
         <box
           backgroundColor={colors.surface}
           paddingX={2}

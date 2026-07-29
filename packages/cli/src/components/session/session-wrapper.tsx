@@ -10,7 +10,6 @@ interface Props {
   onSubmit: (text: string) => void;
   loading?: boolean;
   interrupttible?: boolean;
-  sessionId: string;
 }
 
 export const SessionWrapper = ({
@@ -19,7 +18,6 @@ export const SessionWrapper = ({
   onSubmit,
   loading,
   interrupttible,
-  sessionId,
 }: Props) => {
   const scrollboxRef = useRef<ScrollBoxRenderable>(null);
 
@@ -49,6 +47,11 @@ export const SessionWrapper = ({
     }
   });
 
+  const handleSubmit = (text: string) => {
+    scrollboxRef.current?.scrollTo(Infinity);
+    onSubmit(text);
+  };
+
   return (
     <box
       flexDirection="column"
@@ -70,11 +73,7 @@ export const SessionWrapper = ({
       </scrollbox>
 
       <box flexShrink={0}>
-        <InputBar
-          onSubmit={onSubmit}
-          disabled={inputDisabled}
-          sessionId={sessionId}
-        />
+        <InputBar onSubmit={handleSubmit} disabled={inputDisabled} />
       </box>
 
       <box
