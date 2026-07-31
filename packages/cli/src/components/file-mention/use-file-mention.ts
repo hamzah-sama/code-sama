@@ -1,4 +1,10 @@
-import { useCallback, useRef, useState, type RefObject } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type RefObject,
+} from "react";
 import { useKeyboard } from "@opentui/react";
 import type { ScrollBoxRenderable, TextareaRenderable } from "@opentui/core";
 import { useLayer } from "../../providers/layer/layer-context";
@@ -14,7 +20,9 @@ export const useFileMention = ({ mentionScrollRef, textAreaRef }: Props) => {
   const activeMentionRef = useRef<MentionMatch | null>(null);
   const [activeMention, setActiveMention] = useState<MentionMatch | null>(null);
   const [mentionSelectedIndex, setMentionSelectedIndex] = useState(0);
-  const [mentionCandidates, setMentionCandidates] = useState<MentionCandidate[]>([]);
+  const [mentionCandidates, setMentionCandidates] = useState<
+    MentionCandidate[]
+  >([]);
 
   const { push, pop, isTopLayer } = useLayer();
 
@@ -49,6 +57,10 @@ export const useFileMention = ({ mentionScrollRef, textAreaRef }: Props) => {
   }, [mentionScrollRef, pop]);
 
   const showMentionMenu = activeMention !== null;
+
+  useEffect(() => {
+    return () => pop("mention");
+  }, [pop]);
 
   const syncMentionMenu = useCallback(
     (text: string, cursorOffset: number) => {

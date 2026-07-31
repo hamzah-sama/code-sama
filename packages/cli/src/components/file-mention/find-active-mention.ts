@@ -62,7 +62,7 @@ return {
 
 example 2:
 text = "what is @src/main.ts about"
-cursorOffset = 21
+cursorOffset = 20
 
 return {
   start: 8,

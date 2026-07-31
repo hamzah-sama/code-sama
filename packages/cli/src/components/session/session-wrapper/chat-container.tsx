@@ -1,6 +1,7 @@
 import type { ScrollBoxRenderable } from "@opentui/core";
 import { useKeyboard } from "@opentui/react";
-import { useRef, type RefObject } from "react";
+import { type RefObject } from "react";
+import { useLayer } from "../../../providers/layer/layer-context";
 
 interface Props {
   children: React.ReactNode;
@@ -8,8 +9,10 @@ interface Props {
 }
 
 export const ChatContainer = ({ children, scrollboxRef }: Props) => {
+  const { isTopLayer } = useLayer();
   useKeyboard((key) => {
     const scrollbox = scrollboxRef.current;
+    if (!isTopLayer("base")) return;
 
     if (!scrollbox) return;
 

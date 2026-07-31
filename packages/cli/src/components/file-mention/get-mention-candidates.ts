@@ -7,6 +7,8 @@ const CURRENT_DIRECTORY = process.cwd();
 const IGNORE_DIRECTORY = new Set(["node_modules"]);
 const MAX_MENTION_CANDIDATES = 32;
 const MIN_RECURSIVE_QUERY_LENGTH = 2;
+const MAX_RECURSIVE_DEPTH = 6;
+const MAX_RECURSIVE_MATCHES = MAX_MENTION_CANDIDATES * 4;
 
 type RankedMentionCandidate = MentionCandidate & {
   score: number;
@@ -137,10 +139,19 @@ const collectRecursiveMatches = async ({
   const visit = async (
     absoluteDirectory: string,
     directoryPath: string,
+    depth: number,
   ): Promise<void> => {
-    const entries = await readdir(absoluteDirectory, { withFileTypes: true });
+    if (depth > MAX_RECURSIVE_DEPTH) return;
+    if (matches.length >= MAX_RECURSIVE_MATCHES) return;
+    let entries: Dirent[];
+    try {
+      entries = await readdir(absoluteDirectory, { withFileTypes: true });
+    } catch {
+      return;
+    }
 
     for (const entry of entries) {
+      if (matches.length >= MAX_RECURSIVE_MATCHES) return;
       if (IGNORE_DIRECTORY.has(entry.name)) continue;
       if (!shouldIncludeEntry(entry.name, showHiddenEntries)) continue;
 
@@ -151,12 +162,16 @@ const collectRecursiveMatches = async ({
       }
 
       if (entry.isDirectory()) {
-        await visit(resolve(absoluteDirectory, entry.name), candidate.path.slice(0, -1));
+        await visit(
+          resolve(absoluteDirectory, entry.name),
+          candidate.path.slice(0, -1),
+          depth + 1,
+        );
       }
     }
   };
 
-  await visit(searchRoot, searchRootPath);
+  await visit(searchRoot, searchRootPath, 0);
   return matches;
 };
 
@@ -165,7 +180,10 @@ const toSortedCandidates = (candidates: RankedMentionCandidate[]) => {
 
   for (const candidate of candidates) {
     const currentCandidate = dedupedCandidates.get(candidate.path);
-    if (!currentCandidate || compareRankedCandidates(candidate, currentCandidate) < 0) {
+    if (
+      !currentCandidate ||
+      compareRankedCandidates(candidate, currentCandidate) < 0
+    ) {
       dedupedCandidates.set(candidate.path, candidate);
     }
   }
@@ -227,9 +245,10 @@ export const getMentionCandidates = async (
   }
 
   const canSearchRecursively =
-    !hasTrailingSlash && (
-      directoryPath !== '' ? nameQuery.length >=1 : nameQuery.length >= MIN_RECURSIVE_QUERY_LENGTH
-    )
+    !hasTrailingSlash &&
+    (directoryPath !== ""
+      ? nameQuery.length >= 1
+      : nameQuery.length >= MIN_RECURSIVE_QUERY_LENGTH);
 
   if (!canSearchRecursively) {
     return toSortedCandidates(rankedCandidates);
@@ -241,7 +260,8 @@ export const getMentionCandidates = async (
   const recursiveSearchPath = isWithinCurrentDirectory(directDirectory)
     ? directoryPath
     : "";
-  const recursiveQuery = recursiveSearchPath === "" ? normalizedQuery : nameQuery;
+  const recursiveQuery =
+    recursiveSearchPath === "" ? normalizedQuery : nameQuery;
 
   try {
     rankedCandidates.push(
