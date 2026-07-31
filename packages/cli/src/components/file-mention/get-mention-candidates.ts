@@ -35,13 +35,11 @@ const toMentionCandidate = (
   directoryPath: string,
 ): MentionCandidate => {
   const path = directoryPath ? `${directoryPath}/${entry.name}` : entry.name;
-  const kind: MentionCandidate["kind"] = entry.isDirectory()
-    ? "directory"
-    : "file";
+  const isDirectory = entry.isDirectory();
 
   return {
-    path: kind === "directory" ? `${path}/` : path,
-    kind,
+    path: isDirectory ? `${path}/` : path,
+    kind: isDirectory ? "directory" : "file",
   };
 };
 
@@ -88,9 +86,9 @@ const getRecursiveMatchScore = (candidate: MentionCandidate, query: string) => {
     ? candidate.path.slice(0, -1)
     : candidate.path;
   const lowercasePath = normalizedCandidatePath.toLowerCase();
-  const lowercaseName = lowercasePath.split("/").at(-1) ?? lowercasePath;
-  const lowercaseQuery = query.toLowerCase();
   const pathSegments = lowercasePath.split("/");
+  const lowercaseName = pathSegments.at(-1) ?? lowercasePath;
+  const lowercaseQuery = query.toLowerCase();
 
   if (lowercasePath === lowercaseQuery) {
     return 0;
@@ -162,9 +160,11 @@ const collectRecursiveMatches = async ({
       }
 
       if (entry.isDirectory()) {
+        const childDirectoryPath = candidate.path.slice(0, -1);
+
         await visit(
           resolve(absoluteDirectory, entry.name),
-          candidate.path.slice(0, -1),
+          childDirectoryPath,
           depth + 1,
         );
       }
@@ -254,12 +254,13 @@ export const getMentionCandidates = async (
     return toSortedCandidates(rankedCandidates);
   }
 
-  const recursiveSearchRoot = isWithinCurrentDirectory(directDirectory)
+  const isWithinProject = isWithinCurrentDirectory(directDirectory);
+
+  const recursiveSearchRoot = isWithinProject
     ? directDirectory
     : CURRENT_DIRECTORY;
-  const recursiveSearchPath = isWithinCurrentDirectory(directDirectory)
-    ? directoryPath
-    : "";
+
+  const recursiveSearchPath = isWithinProject ? directoryPath : "";
   const recursiveQuery =
     recursiveSearchPath === "" ? normalizedQuery : nameQuery;
 
