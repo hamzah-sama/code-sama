@@ -4,6 +4,8 @@ import { SessionDialog } from "../dialog/session-dialog";
 import { ThemeDialog } from "../dialog/theme-dialog";
 import { availableChatModel } from "@code-sama/shared";
 import type { Command, commandContext } from "./types";
+import { performLogin } from "../../lib/oauth";
+import { clearAuth } from "../../lib/auth";
 
 export const commandList: Command[] = [
   {
@@ -40,7 +42,7 @@ export const commandList: Command[] = [
     action: (ctx: commandContext) => {
       ctx.dialog.open({
         title: "Select session",
-        children: <SessionDialog currentSession={ctx.sessionId}  />,
+        children: <SessionDialog currentSession={ctx.sessionId} />,
       });
     },
   },
@@ -90,12 +92,14 @@ export const commandList: Command[] = [
     value: "/feedback",
   },
   {
-    name: "report",
-    description: "Report an issue",
-    value: "/report",
+    name: "logout",
+    description: "Sign out of your account",
+    value: "/logout",
     action: (ctx: commandContext) => {
+      clearAuth();
       ctx.toast.show({
-        message: "Issue reported",
+        message: "Signed out successfully",
+        variant: "success",
       });
     },
   },
@@ -120,24 +124,25 @@ export const commandList: Command[] = [
     },
   },
   {
-    name: "logout",
-    description: "Log out of the application",
-    value: "/logout",
-    action: (ctx: commandContext) => {
-      ctx.toast.show({
-        message: "Logged out",
-      });
-    },
-  },
-  {
     name: "login",
     description: "Log in to the application",
     value: "/login",
-    action: (ctx: commandContext) => {
+    action: async (ctx: commandContext) => {
       ctx.toast.show({
-        message: "Logged in",
-        variant: "success",
+        message: "Opening browser to sign in . . .",
+        variant: "info",
       });
+      try {
+        await performLogin();
+        ctx.toast.show({
+          message: "Signed in",
+          variant: "success",
+        });
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Sign in failed or timeout";
+        ctx.toast.show({ variant: "error", message });
+      }
     },
   },
   {

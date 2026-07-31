@@ -25,7 +25,7 @@ export const Toast = ({ toast }: Props) => {
   return (
     <box
       position="absolute"
-      width={Math.max(1, Math.min(30, width - 6))}
+      width={Math.max(1, Math.min(60, width - 6))}
       top={2}
       right={2}
       justifyContent="center"
@@ -33,8 +33,9 @@ export const Toast = ({ toast }: Props) => {
       padding={1}
       borderColor={borderColor}
       border={["right", "left"]}
+      backgroundColor={colors.surface}
     >
-      <text width="100%" wrapMode="word" fg="#e1e1e1">
+      <text width="100%" wrapMode="word" fg={colors.primary}>
         {toast.message}
       </text>
     </box>

@@ -13,10 +13,12 @@ type ResumeContext = Context<any, "/:sessionId">;
 
 export const resumeSession = async (c: ResumeContext) => {
   const { sessionId } = c.req.param();
+  const userId = c.get("userId");
 
   const session = await db.session.findUnique({
     where: {
       id: sessionId,
+      userId,
     },
     include: {
       messages: {
