@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import type { SessionData } from "react-router";
 import { mapMessages } from "./utils/mapMessages";
-import { useKeyboardLayer } from "../../providers/keyboard/keyboard-context";
 import { useChat } from "../../hooks/use-chat";
 import { useKeyboard } from "@opentui/react";
-import { SessionWrapper } from "./session-wrapper";
-import { DEFAULT_CHAT_MODEL_NAME } from "@code-sama/shared";
 import { MessageRenderer } from "./message-renderer";
 import { BotMessage } from "../messages/bot-message";
 import { useMode } from "../../providers/mode/mode-context";
 import { useModel } from "../../providers/model/model-context";
+import { SessionWrapper } from "./session-wrapper";
+import { useLayer } from "../../providers/layer/layer-context";
 
 interface Props {
   session: SessionData;
@@ -19,7 +18,7 @@ export const SessionChat = ({ session }: Props) => {
   const { mode } = useMode();
   const { model } = useModel();
   const [initialMessages] = useState(() => mapMessages(session.messages));
-  const { isTopLayer } = useKeyboardLayer();
+  const { isTopLayer } = useLayer();
   const { messages, streaming, abort, submit, interrupt } = useChat(
     session.id,
     initialMessages,
@@ -51,7 +50,7 @@ export const SessionChat = ({ session }: Props) => {
         })
       }
       loading={streaming.status === "streaming"}
-      interrupttible={streaming.status === "streaming"}
+      sessionId={session.id}
     >
       {messages.map((msg) => (
         <MessageRenderer key={msg.id} message={msg} />
