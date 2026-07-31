@@ -118,10 +118,16 @@ export const performLogin = async () => {
             throw new Error(details || "Failed to exchange authorization code");
           }
 
-          const tokenData = (await tokenRes.json()) as { access_token: string };
+          const tokenData = (await tokenRes.json()) as {
+            access_token: unknown;
+          };
+          const token = tokenData.access_token;
+          if (typeof token !== "string" || token.length === 0) {
+            throw new Error("Token response did not include an access token");
+          }
           settled = true;
-          saveAuthData({ token: tokenData.access_token });
-          resolve({ token: tokenData.access_token });
+          saveAuthData({ token });
+          resolve({ token });
           setTimeout(() => server.stop(), 500);
           return new Response("Authenticated, you can close this tab!");
         } catch (err) {
@@ -156,7 +162,10 @@ export const performLogin = async () => {
     authorizedUrl.searchParams.set("code_challenge", codeChallenge);
     authorizedUrl.searchParams.set("code_challenge_method", "S256");
 
-    void open(authorizedUrl.toString());
+    const url = authorizedUrl.toString();
+    open(url).catch(() => {
+      console.log(`Open this ${url} to signed in`);
+    });
 
     setTimeout(() => {
       if (!settled) {

@@ -1,9 +1,8 @@
 import {
-  existsSync,
   mkdirSync,
   readFileSync,
-  unlink,
   unlinkSync,
+  chmodSync,
   writeFileSync,
 } from "node:fs";
 import { homedir } from "node:os";
@@ -29,10 +28,9 @@ export const getAuthData = (): Authdata | null => {
 };
 
 export const saveAuthData = (data: Authdata) => {
-  if (!existsSync(AUTH_DIR)) {
-    mkdirSync(AUTH_DIR, { mode: 0o700 });
-  }
+  mkdirSync(AUTH_DIR, { mode: 0o700, recursive: true });
   writeFileSync(AUTH_FILE, JSON.stringify(data), { mode: 0o600 });
+  chmodSync(AUTH_FILE, 0o600);
 };
 
 export const clearAuth = () => {
@@ -40,5 +38,3 @@ export const clearAuth = () => {
     unlinkSync(AUTH_FILE);
   } catch {}
 };
-
-

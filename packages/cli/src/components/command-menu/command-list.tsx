@@ -130,7 +130,7 @@ export const commandList: Command[] = [
     action: async (ctx: commandContext) => {
       ctx.toast.show({
         message: "Opening browser to sign in . . .",
-        variant: "success",
+        variant: "info",
       });
       try {
         await performLogin();

@@ -35,7 +35,7 @@ export const Toast = ({ toast }: Props) => {
       border={["right", "left"]}
       backgroundColor={colors.surface}
     >
-      <text width="100%" wrapMode="word" fg="#e1e1e1">
+      <text width="100%" wrapMode="word" fg={colors.primary}>
         {toast.message}
       </text>
     </box>
