@@ -1,7 +1,7 @@
 import type { ScrollBoxRenderable } from "@opentui/core";
 import { useKeyboard } from "@opentui/react";
 import type { RefObject } from "react";
-import type { Command } from "./types";
+import type { Command } from "../types";
 
 interface Props {
   showCommandMenu: boolean;

@@ -1,7 +1,8 @@
 import { ScrollBoxRenderable, TextAttributes } from "@opentui/core";
 import { commandList } from "./command-list";
 import { getCommands } from "./get-command";
-import type {RefObject} from 'react';
+import type { RefObject } from "react";
+import { useTheme } from "../../providers/theme/theme-context";
 
 const MAX_VIEWABLE_COMMANDS = 6;
 
@@ -14,6 +15,7 @@ interface Props {
   scrollRef: RefObject<ScrollBoxRenderable | null>;
 }
 export const CommandMenu = ({ query, selectedIndex, scrollRef }: Props) => {
+  const { colors }= useTheme();
   const commands = getCommands(query);
   const visibleHeight = Math.min(commands.length, MAX_VIEWABLE_COMMANDS);
 
@@ -26,32 +28,42 @@ export const CommandMenu = ({ query, selectedIndex, scrollRef }: Props) => {
   }
 
   return (
-    <scrollbox height={visibleHeight} ref={scrollRef}>
-      {commands.map((command, index) => {
-        const isSelected = index === selectedIndex;
-        return (
-          <box
-            key={command.value}
-            flexDirection="row"
-            gap={1}
-            paddingX={1}
-            height={1}
-            overflow="hidden"
-            backgroundColor={isSelected ? "#89B4fa" : undefined}
-          >
-            <box width={COMMAND_COL_WIDTH} flexShrink={0}>
-              <text fg={isSelected ? "black" : "white"} selectable={false}>
-                /{command.name}
-              </text>
+    <box
+      position="absolute"
+      zIndex={10}
+      bottom="100%"
+      left={0}
+      width="100%"
+      backgroundColor={colors.surface}
+      paddingX={2}
+    >
+      <scrollbox height={visibleHeight} ref={scrollRef}>
+        {commands.map((command, index) => {
+          const isSelected = index === selectedIndex;
+          return (
+            <box
+              key={command.value}
+              flexDirection="row"
+              gap={1}
+              paddingX={1}
+              height={1}
+              overflow="hidden"
+              backgroundColor={isSelected ? "#89B4fa" : undefined}
+            >
+              <box width={COMMAND_COL_WIDTH} flexShrink={0}>
+                <text fg={isSelected ? "black" : "white"} selectable={false}>
+                  /{command.name}
+                </text>
+              </box>
+              <box flexShrink={1} flexGrow={1} overflow="hidden">
+                <text fg={isSelected ? "black" : "gray"} selectable={false}>
+                  {command.description}
+                </text>
+              </box>
             </box>
-            <box flexShrink={1} flexGrow={1} overflow="hidden">
-              <text fg={isSelected ? "black" : "gray"} selectable={false}>
-                {command.description}
-              </text>
-            </box>
-          </box>
-        );
-      })}
-    </scrollbox>
+          );
+        })}
+      </scrollbox>
+    </box>
   );
 };

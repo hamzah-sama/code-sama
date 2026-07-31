@@ -6,7 +6,7 @@ import {
 import { useRef, useState } from "react";
 import { useKeyboard } from "@opentui/react";
 import { useTheme } from "../../providers/theme/theme-context";
-import { useKeyboardLayer } from "../../providers/keyboard/keyboard-context";
+import { useLayer } from "../../providers/layer/layer-context";
 
 interface Props<T> {
   placeholder: string;
@@ -34,7 +34,7 @@ export const DialogSearchList = <T,>({
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [searchValue, setSearchValue] = useState("");
   const { colors } = useTheme();
-  const { isTopLayer } = useKeyboardLayer();
+  const { isTopLayer } = useLayer();
   const MAX_VISIBLE_ITEMS = 8;
 
   const handleContentChange = () => {

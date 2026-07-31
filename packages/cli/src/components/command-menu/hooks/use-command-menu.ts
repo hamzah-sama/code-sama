@@ -1,8 +1,8 @@
 import type { ScrollBoxRenderable } from "@opentui/core";
 import { useRef, useState } from "react";
-import { getCommands } from "./get-command";
-import type { Command } from "./types";
 import { useCommandNavigation } from "./use-command-navigations";
+import type { Command } from "../types";
+import { getCommands } from "../get-command";
 
 type UseCommandMenuReturn = {
   showCommandMenu: boolean;

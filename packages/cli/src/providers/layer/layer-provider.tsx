@@ -1,14 +1,13 @@
 import { useCallback, useRef, useState, type ReactNode } from "react";
-import { keyboardContext } from "./keyboard-context";
 import type { Responder } from "./types";
-import { useKeyboard, useRenderer } from "@opentui/react";
+import { useKeyboard } from "@opentui/react";
+import { layerContext } from "./layer-context";
 
 interface Props {
   children: ReactNode;
 }
 
-export const KeyboardProvider = ({ children }: Props) => {
-  const renderer = useRenderer();
+export const LayerProvider = ({ children }: Props) => {
   const [layerStack, setLayerStack] = useState<string[]>(["base"]);
   const stackRef = useRef(layerStack);
   stackRef.current = layerStack;
@@ -65,8 +64,8 @@ export const KeyboardProvider = ({ children }: Props) => {
   });
 
   return (
-    <keyboardContext.Provider value={{ push, pop, isTopLayer, setResponder }}>
+    <layerContext.Provider value={{ push, pop, isTopLayer, setResponder }}>
       {children}
-    </keyboardContext.Provider>
+    </layerContext.Provider>
   );
 };

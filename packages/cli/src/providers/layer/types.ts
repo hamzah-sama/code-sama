@@ -1,5 +1,5 @@
 export type Responder = () => boolean;
-export type KeyboardContextValue = {
+export type LayerContextValue = {
   push: (layerName: string, responder?: Responder) => void;
   pop: (layerName: string) => void;
   isTopLayer: (layerName: string) => boolean;

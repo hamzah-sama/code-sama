@@ -1,15 +1,15 @@
 import { useCallback, useState, type ReactNode } from "react";
 import { DialogContext } from "./dialog-context";
-import { useKeyboardLayer } from "../keyboard/keyboard-context";
 import type { DialogConfig } from "./type";
 import { Dialog } from "./dialog";
+import { useLayer } from "../layer/layer-context";
 
 interface Props {
   children: ReactNode;
 }
 
 export const DialogProvider = ({ children }: Props) => {
-  const { push, pop } = useKeyboardLayer();
+  const { push, pop } = useLayer();
 
   const [currentDialog, setCurrentDialog] = useState<DialogConfig | null>(null);
 
