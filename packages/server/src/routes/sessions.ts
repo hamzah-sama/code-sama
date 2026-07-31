@@ -4,6 +4,7 @@ import { findSupportedChatModel } from "@code-sama/shared";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { db, Mode, Role, MessageStatus } from "@code-sama/database";
+import type { AuthenticatedEnv } from "../middleware/require-auth";
 
 const createSessionSchema = z.object({
   title: z.string(),
@@ -30,9 +31,13 @@ const createSessionValidator = zValidator(
   },
 );
 
-const app = new Hono()
+const app = new Hono<AuthenticatedEnv>()
   .get("/", async (c) => {
+    const userId = c.get("userId");
     const sessions = await db.session.findMany({
+      where: {
+        userId,
+      },
       orderBy: {
         createdAt: "desc",
       },
@@ -54,9 +59,12 @@ const app = new Hono()
     // });
 
     const id = c.req.param("id");
+    const userId = c.get("userId");
+
     const session = await db.session.findUnique({
       where: {
         id,
+        userId,
       },
       include: {
         messages: {
@@ -81,13 +89,14 @@ const app = new Hono()
     // throw new HTTPException(500, {
     //   message: "Mock error: failed to get session",
     // });
+    const userId = c.get("userId");
 
     const { initialMessage, ...data } = c.req.valid("json");
 
     const session = await db.session.create({
       data: {
         ...data,
-        userId: "mock-userId",
+        userId,
         ...(initialMessage && {
           messages: {
             create: {

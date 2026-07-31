@@ -12,11 +12,14 @@ type AddchatContext = Context<
   { in: { json: SubmitSchema }; out: { json: SubmitSchema } }
 >;
 export const addChat = async (c: AddchatContext) => {
+  const userId = c.get("userId");
+
   const { sessionId } = c.req.param();
 
   const session = await db.session.findUnique({
     where: {
       id: sessionId,
+      userId,
     },
     include: {
       messages: {

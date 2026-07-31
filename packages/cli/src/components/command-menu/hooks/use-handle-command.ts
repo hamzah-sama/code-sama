@@ -29,21 +29,25 @@ export function useHandleCommand({ textAreaRef, sessionId }: Props) {
       textArea.setText("");
 
       if (command.action) {
-        Promise.resolve(
-          command.action({
-            exit: () => renderer.destroy(),
-            toast,
-            dialog,
-            navigate,
-            mode,
-            setModel,
-            setMode,
-            model,
-            sessionId,
-          }),
-        ).catch((error) => {
+        try {
+          Promise.resolve(
+            command.action({
+              exit: () => renderer.destroy(),
+              toast,
+              dialog,
+              navigate,
+              mode,
+              setModel,
+              setMode,
+              model,
+              sessionId,
+            }),
+          ).catch((error) => {
+            toast.show({ variant: "error", message: String(error) });
+          });
+        } catch (error) {
           toast.show({ variant: "error", message: String(error) });
-        });
+        }
       } else {
         textArea.insertText(command.value + " ");
       }
