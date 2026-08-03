@@ -6,7 +6,7 @@ import type { AuthenticatedEnv } from "../../middleware/require-auth";
 import { requireCreditsBalance } from "../../middleware/require-credits-balance";
 
 const app = new Hono<AuthenticatedEnv>()
-  .post("/:sessionId/resume", resumeSession)
+  .post("/:sessionId/resume", requireCreditsBalance, resumeSession)
 
   .post("/:sessionId", requireCreditsBalance, submitValidator, addChat);
 

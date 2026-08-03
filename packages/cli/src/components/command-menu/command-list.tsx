@@ -78,21 +78,6 @@ export const commandList: Command[] = [
     },
   },
   {
-    name: "about",
-    description: "Show information about the application",
-    value: "/about",
-    action: (ctx: commandContext) => {
-      ctx.toast.show({
-        message: "About information shown",
-      });
-    },
-  },
-  {
-    name: "feedback",
-    description: "Provide feedback",
-    value: "/feedback",
-  },
-  {
     name: "logout",
     description: "Sign out of your account",
     value: "/logout",
@@ -157,16 +142,6 @@ export const commandList: Command[] = [
     },
   },
   {
-    name: "restart",
-    description: "Restart the application",
-    value: "/restart",
-    action: (ctx: commandContext) => {
-      ctx.toast.show({
-        message: "Application restarted",
-      });
-    },
-  },
-  {
     name: "login",
     description: "Log in to the application",
     value: "/login",
@@ -186,26 +161,6 @@ export const commandList: Command[] = [
           error instanceof Error ? error.message : "Sign in failed or timeout";
         ctx.toast.show({ variant: "error", message });
       }
-    },
-  },
-  {
-    name: "profile",
-    description: "View your profile",
-    value: "/profile",
-    action: (ctx: commandContext) => {
-      ctx.toast.show({
-        message: "Profile information shown",
-      });
-    },
-  },
-  {
-    name: "notifications",
-    description: "View notifications",
-    value: "/notifications",
-    action: (ctx: commandContext) => {
-      ctx.toast.show({
-        message: "Notifications shown",
-      });
     },
   },
 ].sort((a, b) => a.name.localeCompare(b.name));

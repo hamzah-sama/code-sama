@@ -4,26 +4,10 @@ import { getAvailableCreditsBalance } from "../lib/polar";
 
 export const requireCreditsBalance = createMiddleware<AuthenticatedEnv>(
   async (c, next) => {
+    const userId = c.get("userId");
+    let creditsBalance: number;
     try {
-      const userId = c.get("userId");
-      const creditsBalance = await getAvailableCreditsBalance(userId);
-
-      console.log({
-        userId,
-        creditsBalance,
-      });
-      if (creditsBalance <= 0) {
-        console.log("BLOCKED BY CREDIT MIDDLEWARE");
-        return c.json(
-          {
-            error:
-              "Insufficient credits balance. Run /upgrade to buy more credits.",
-          },
-          402,
-        );
-      }
-
-      await next();
+      creditsBalance = await getAvailableCreditsBalance(userId);
     } catch {
       return c.json(
         {
@@ -32,5 +16,16 @@ export const requireCreditsBalance = createMiddleware<AuthenticatedEnv>(
         503,
       );
     }
+    if (creditsBalance <= 0) {
+      return c.json(
+        {
+          error:
+            "Insufficient credits balance. Run /upgrade to buy more credits.",
+        },
+        402,
+      );
+    }
+
+    await next();
   },
 );

@@ -22,7 +22,7 @@ const app = new Hono<AuthenticatedEnv>()
     });
   })
   .get("/success", (c) => {
-    return c.text("Done, you can close this tab and return to the code-sama");
+    return c.text("Done, you can close this tab and return to code-sama");
   });
 
 export default app;
