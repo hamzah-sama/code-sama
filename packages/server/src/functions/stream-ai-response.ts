@@ -2,7 +2,11 @@ import { db, MessageStatus, type Mode } from "@code-sama/database";
 import type { conversationHistory } from "./conversation-history";
 import { streamSSE } from "hono/streaming";
 import { resolvedChatModel } from "../lib/models";
-import { streamText as aiStreamText, stepCountIs } from "ai";
+import {
+  streamText as aiStreamText,
+  stepCountIs,
+  type LanguageModelUsage,
+} from "ai";
 import { createTools } from "../tools";
 import {
   messagePartsSchema,
@@ -12,26 +16,35 @@ import {
 import type { MessagePart } from "@code-sama/shared";
 import { Prisma } from "@code-sama/database";
 import { buildSystemPropmpt } from "../system-prompt";
+import { calculateCreditsForUsage } from "../lib/credits";
+import { ingestAiUsage } from "../lib/polar";
 
 type StreamParams = {
   mode: Mode;
   model: string;
   sessionId: string;
+  userId: string;
   cwd: string | null;
   history: ReturnType<typeof conversationHistory>;
   abortController: AbortController;
+};
+
+type IngestUsageforMessageParams = {
+  messageId: string;
 };
 
 export const streamAiResponse = async (
   stream: Parameters<Parameters<typeof streamSSE>[1]>[0],
   params: StreamParams,
 ) => {
-  const { mode, model, sessionId, history, abortController, cwd } = params;
+  const { mode, model, sessionId, history, abortController, cwd, userId } =
+    params;
   const startTime = Date.now();
   const tools = cwd ? createTools(cwd, mode) : undefined;
   const parts: MessagePart[] = [];
 
   const resolvedModel = resolvedChatModel(model);
+  let completedUsage: LanguageModelUsage | null = null;
 
   const persistInterruptedMessage = async () => {
     const fullText = parts
@@ -45,7 +58,7 @@ export const streamAiResponse = async (
     const validatedParts: Prisma.InputJsonValue | undefined =
       parts.length > 0 ? messagePartsSchema.parse(parts) : undefined;
 
-    await db.message.create({
+    return db.message.create({
       data: {
         sessionId,
         role: "ASSISTANT",
@@ -59,15 +72,53 @@ export const streamAiResponse = async (
     });
   };
 
+  const ingestUsageForMessage = async ({
+    messageId,
+  }: IngestUsageforMessageParams) => {
+    if (!completedUsage) return;
+    try {
+      const billableUsage = calculateCreditsForUsage({
+        provider: resolvedModel.provider,
+        model: resolvedModel.modelName,
+        usage: completedUsage,
+      });
+
+      await ingestAiUsage({
+        externalCustomerId: userId,
+        eventId: `chat-message:${messageId}`,
+        credits: billableUsage.credits,
+      });
+    } catch (error) {
+      console.error("Failed to ingest AI usage for chat message", {
+        error,
+        sessionId,
+        messageId,
+        userId,
+      });
+    }
+  };
+
+  const persistInterruptedMessageAndUsage = async () => {
+    const interruptedMessage = await persistInterruptedMessage();
+    if (!interruptedMessage) return;
+
+    await ingestUsageForMessage({
+      messageId: interruptedMessage.id,
+    });
+  };
+
   try {
     const result = aiStreamText({
       model: resolvedModel.model,
       system: buildSystemPropmpt({ cwd, mode }),
       messages: history,
       tools,
-      stopWhen : tools ? stepCountIs(50) : undefined,
+      stopWhen: tools ? stepCountIs(50) : undefined,
       abortSignal: abortController.signal,
       providerOptions: resolvedModel.providerOptions,
+      onFinish(event) {
+        completedUsage = event.usage;
+      },
     });
 
     for await (const part of result.stream) {
@@ -159,7 +210,7 @@ export const streamAiResponse = async (
     }
 
     if (stream.aborted || abortController.signal.aborted) {
-      await persistInterruptedMessage();
+      await persistInterruptedMessageAndUsage();
       return;
     }
 
@@ -186,6 +237,10 @@ export const streamAiResponse = async (
       },
     });
 
+    await ingestUsageForMessage({
+      messageId: assistantMessage.id,
+    });
+
     const doneEvent: ChatStreamEvent = {
       type: "done",
       messageId: assistantMessage.id,
@@ -195,7 +250,7 @@ export const streamAiResponse = async (
     await stream.writeSSE({ event: "done", data: JSON.stringify(doneEvent) });
   } catch (error) {
     if (abortController.signal.aborted) {
-      await persistInterruptedMessage();
+      await persistInterruptedMessageAndUsage();
       return;
     }
 

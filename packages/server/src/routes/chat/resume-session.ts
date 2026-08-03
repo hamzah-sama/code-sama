@@ -82,6 +82,7 @@ export const resumeSession = async (c: ResumeContext) => {
             history,
             cwd: session.cwd,
             abortController,
+            userId,
           });
         } finally {
           cleanup();

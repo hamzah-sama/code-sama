@@ -68,6 +68,7 @@ export const addChat = async (c: AddchatContext) => {
         history,
         mode,
         abortController,
+        userId,
       });
     },
 

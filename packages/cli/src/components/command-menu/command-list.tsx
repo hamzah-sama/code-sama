@@ -6,6 +6,7 @@ import { availableChatModel } from "@code-sama/shared";
 import type { Command, commandContext } from "./types";
 import { performLogin } from "../../lib/oauth";
 import { clearAuth } from "../../lib/auth";
+import { openBillingPortal, openUpgradeCheckout } from "../../lib/upgrade";
 
 export const commandList: Command[] = [
   {
@@ -77,21 +78,6 @@ export const commandList: Command[] = [
     },
   },
   {
-    name: "about",
-    description: "Show information about the application",
-    value: "/about",
-    action: (ctx: commandContext) => {
-      ctx.toast.show({
-        message: "About information shown",
-      });
-    },
-  },
-  {
-    name: "feedback",
-    description: "Provide feedback",
-    value: "/feedback",
-  },
-  {
     name: "logout",
     description: "Sign out of your account",
     value: "/logout",
@@ -104,23 +90,55 @@ export const commandList: Command[] = [
     },
   },
   {
-    name: "update",
-    description: "Check for updates",
-    value: "/update",
-    action: (ctx: commandContext) => {
+    name: "upgrade",
+    description: "Upgrade your plan",
+    value: "/upgrade",
+    action: async (ctx: commandContext) => {
       ctx.toast.show({
-        message: "Updates checked",
+        message: "Opening credits checkout...",
       });
+
+      try {
+        await openUpgradeCheckout();
+        ctx.toast.show({
+          message: "Checkout opened in browser",
+          variant: "success",
+        });
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : "Failed to open checkout";
+        ctx.toast.show({
+          message,
+          variant: "error",
+        });
+      }
     },
   },
   {
-    name: "restart",
-    description: "Restart the application",
-    value: "/restart",
-    action: (ctx: commandContext) => {
+    name: "usage",
+    description: "Open billing portal in your browser",
+    value: "/usage",
+    action: async (ctx: commandContext) => {
       ctx.toast.show({
-        message: "Application restarted",
+        message: "Opening billing portal in browser...",
       });
+
+      try {
+        await openBillingPortal();
+        ctx.toast.show({
+          message: "Billing portal opened in browser",
+          variant: "success",
+        });
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "Failed to open billing portal";
+        ctx.toast.show({
+          message,
+          variant: "error",
+        });
+      }
     },
   },
   {
@@ -143,26 +161,6 @@ export const commandList: Command[] = [
           error instanceof Error ? error.message : "Sign in failed or timeout";
         ctx.toast.show({ variant: "error", message });
       }
-    },
-  },
-  {
-    name: "profile",
-    description: "View your profile",
-    value: "/profile",
-    action: (ctx: commandContext) => {
-      ctx.toast.show({
-        message: "Profile information shown",
-      });
-    },
-  },
-  {
-    name: "notifications",
-    description: "View notifications",
-    value: "/notifications",
-    action: (ctx: commandContext) => {
-      ctx.toast.show({
-        message: "Notifications shown",
-      });
     },
   },
 ].sort((a, b) => a.name.localeCompare(b.name));
