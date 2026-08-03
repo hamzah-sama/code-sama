@@ -17,6 +17,7 @@
     "@code-sama/database": "workspace:*",
     "@code-sama/shared": "workspace:*",
     "@hono/zod-validator": "^0.9.0",
+    "@polar-sh/sdk": "^0.49.0",
     "ai": "^7.0.35",
     "dotenv": "^17.4.2",
     "hono": "^4.12.31",

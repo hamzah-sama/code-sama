@@ -5,6 +5,8 @@ import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
 import { db, Mode, Role, MessageStatus } from "@code-sama/database";
 import type { AuthenticatedEnv } from "../middleware/require-auth";
+import { isSupportedChatModel } from "../lib/models";
+import { requireCreditsBalance } from "../middleware/require-credits-balance";
 
 const createSessionSchema = z.object({
   title: z.string(),
@@ -16,7 +18,7 @@ const createSessionSchema = z.object({
       content: z.string(),
       model: z
         .string()
-        .refine((name) => !!findSupportedChatModel(name), "Unsupported model"),
+        .refine((name) => isSupportedChatModel(name), "Unsupported model"),
     })
     .optional(),
 });
@@ -81,7 +83,7 @@ const app = new Hono<AuthenticatedEnv>()
 
     return c.json(session);
   })
-  .post("/", createSessionValidator, async (c) => {
+  .post("/", requireCreditsBalance, createSessionValidator, async (c) => {
     // uncomented for testing
 
     // await new Promise((resolve) => setTimeout(resolve, 3000));
