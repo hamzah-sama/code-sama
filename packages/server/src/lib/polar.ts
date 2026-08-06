@@ -69,8 +69,6 @@ export const getAvailableCreditsBalance = async (externalId: string) => {
     const customerState = await polar.customers.getStateExternal({
       externalId,
     });
-    const { activeMeters } = customerState;
-    console.log("activeMeter :", activeMeters);
     const matchingMeters = customerState.activeMeters.filter(
       (meter) => meter.meterId === getPolarCreditsMeterId(),
     );

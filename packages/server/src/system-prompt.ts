@@ -1,21 +1,16 @@
-import type { Mode } from "@code-sama/database";
+import type { ModeType } from "@code-sama/shared";
 
 interface Props {
-  mode: Mode;
-  cwd: string | null;
+  mode: ModeType;
 }
 
-export const buildSystemPropmpt = ({ cwd, mode }: Props): string => {
+export const buildSystemPrompt = ({ mode }: Props): string => {
   const parts: string[] = [];
 
   parts.push(`You are an expert software engineer working as a coding assistant inside a terminal application.
     The application has two modes the user can switch between:
     - **PLAN** - Read-only analysis and planning. No file modifications.
     - **BUILD** - full implementation with read and write tools.`);
-
-  if (cwd) {
-    parts.push(`\nThe user's project directory is ${cwd}`);
-  }
 
   if (mode === "PLAN") {
     parts.push(`
@@ -35,7 +30,7 @@ export const buildSystemPropmpt = ({ cwd, mode }: Props): string => {
         `);
   }
 
-  if (cwd && mode === "PLAN") {
+  if (mode === "PLAN") {
     parts.push(`
         ## Tool Usage
         You have these tools available:
@@ -51,7 +46,7 @@ export const buildSystemPropmpt = ({ cwd, mode }: Props): string => {
         `);
   }
 
-  if (cwd && mode === "BUILD") {
+  if (mode === "BUILD") {
     parts.push(`
       ## Tool Usage
         You have these tools available:

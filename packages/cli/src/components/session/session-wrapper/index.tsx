@@ -1,5 +1,4 @@
 import { type ScrollBoxRenderable } from "@opentui/core";
-import { useKeyboard } from "@opentui/react";
 import { useRef } from "react";
 import { InputBar } from "../../input-bar";
 import { SessionFooter } from "./session-footer";
@@ -9,7 +8,7 @@ interface Props {
   children?: React.ReactNode;
   onSubmit: (text: string) => void;
   loading: boolean;
-  sessionId: string;
+  sessionId?: string;
 }
 
 export const SessionWrapper = ({

@@ -11,11 +11,19 @@ import { useEffect, useMemo, useState } from "react";
 import { getErrorMessage } from "../../lib/http-errors";
 import { z } from "zod";
 import { SessionChat } from "./session-chat";
+import type { ModeType, SupportedChatModelName } from "@code-sama/shared";
 
 const sessionLocationSchema = z.object({
   session: z.custom<SessionData>(
     (val) => val !== null && typeof val === "object" && "id" in val,
   ),
+  initialPrompt: z
+    .object({
+      message: z.string(),
+      mode: z.custom<ModeType>(),
+      model: z.custom<SupportedChatModelName>(),
+    })
+    .optional(),
 });
 
 export const Session = () => {
@@ -26,13 +34,15 @@ export const Session = () => {
 
   const prefetch = useMemo(() => {
     const parsed = sessionLocationSchema.safeParse(location.state);
-    return parsed.success ? parsed.data.session : null;
+    return parsed.success ? parsed.data : null;
   }, [location.state]);
 
-  const [session, setSession] = useState<SessionData | null>(prefetch);
+  const [session, setSession] = useState<SessionData | null>(
+    prefetch?.session ?? null,
+  );
 
   useEffect(() => {
-    if (prefetch) return;
+    if (prefetch?.session) return;
     setSession(null);
     if (!id) return;
 
@@ -65,8 +75,14 @@ export const Session = () => {
   }, [id, prefetch, navigate, toast]);
 
   if (!session) {
-    return <SessionWrapper inputDisabled onSubmit={() => {}} />;
+    return <SessionWrapper onSubmit={() => {}} sessionId={id} loading />;
   }
 
-  return <SessionChat key={session.id} session={session} />;
+  return (
+    <SessionChat
+      key={session.id}
+      session={session}
+      initialPrompt={prefetch?.initialPrompt}
+    />
+  );
 };

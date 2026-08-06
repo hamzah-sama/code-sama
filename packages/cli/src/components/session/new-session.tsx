@@ -5,14 +5,14 @@ import { z } from "zod";
 import { useEffect, useMemo, useRef } from "react";
 import { apiClient } from "../../lib/api-client";
 import { getErrorMessage } from "../../lib/http-errors";
-import { Mode } from "@code-sama/database";
+import { modeSchema } from "@code-sama/shared";
 import { useToast } from "../../providers/toast/toast-context";
 import { findSupportedChatModel } from "@code-sama/shared";
 
 export const NewSession = () => {
   const newSessionStateSchema = z.object({
     message: z.string(),
-    mode: z.enum(Mode),
+    mode: modeSchema,
     model: z
       .string()
       .refine((name) => !!findSupportedChatModel(name), "Unsupported model"),
@@ -48,13 +48,6 @@ export const NewSession = () => {
               state.message.length > 20
                 ? state.message.slice(0, 20) + "..."
                 : state.message,
-            cwd: process.cwd(),
-            initialMessage: {
-              role: "USER",
-              content: state.message,
-              model: state.model,
-              mode: state.mode,
-            },
           },
         });
         if (ignore) return;
@@ -65,7 +58,7 @@ export const NewSession = () => {
         const session = await res.json();
         navigate(`/session/${session.id}`, {
           replace: true,
-          state: { session },
+          state: { session, initialPrompt: state },
         });
       } catch (error) {
         if (ignore) return;
@@ -87,7 +80,7 @@ export const NewSession = () => {
   if (!state) return;
 
   return (
-    <SessionWrapper onSubmit={() => {}} inputDisabled loading>
+    <SessionWrapper onSubmit={() => {}} loading>
       <UserMessage message={state.message} mode={state.mode} />
     </SessionWrapper>
   );

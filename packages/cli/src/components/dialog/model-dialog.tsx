@@ -1,4 +1,3 @@
-import { Mode } from "@code-sama/database";
 import { DialogSearchList } from "./dialog-search-list";
 import { useCallback } from "react";
 import { useDialog } from "../../providers/dialog/dialog-context";

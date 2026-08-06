@@ -34,7 +34,7 @@ const ANTHROPIC_PROVIDER_OPTIONS: Partial<
     anthropic: {
       thinking: {
         type: "enabled",
-        budgetTokens: 1000,
+        budgetTokens: 1200,
       },
     },
   },

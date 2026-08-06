@@ -1,26 +1,13 @@
 import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
-import { findSupportedChatModel } from "@code-sama/shared";
 import { Hono } from "hono";
 import { HTTPException } from "hono/http-exception";
-import { db, Mode, Role, MessageStatus } from "@code-sama/database";
+import { db } from "@code-sama/database";
 import type { AuthenticatedEnv } from "../middleware/require-auth";
-import { isSupportedChatModel } from "../lib/models";
 import { requireCreditsBalance } from "../middleware/require-credits-balance";
 
 const createSessionSchema = z.object({
   title: z.string(),
-  cwd: z.string().optional(),
-  initialMessage: z
-    .object({
-      role: z.enum(Role),
-      mode: z.enum(Mode),
-      content: z.string(),
-      model: z
-        .string()
-        .refine((name) => isSupportedChatModel(name), "Unsupported model"),
-    })
-    .optional(),
 });
 
 const createSessionValidator = zValidator(
@@ -28,7 +15,7 @@ const createSessionValidator = zValidator(
   createSessionSchema,
   (result, c) => {
     if (!result.success) {
-      return c.json({ error: "Invalid request body" }, 400);
+      return c.json({ error: "Invalid request body wkwk" }, 400);
     }
   },
 );
@@ -68,13 +55,6 @@ const app = new Hono<AuthenticatedEnv>()
         id,
         userId,
       },
-      include: {
-        messages: {
-          orderBy: {
-            createdAt: "asc",
-          },
-        },
-      },
     });
 
     if (!session) {
@@ -92,23 +72,13 @@ const app = new Hono<AuthenticatedEnv>()
     //   message: "Mock error: failed to get session",
     // });
     const userId = c.get("userId");
-
-    const { initialMessage, ...data } = c.req.valid("json");
+    const data = c.req.valid("json");
 
     const session = await db.session.create({
       data: {
         ...data,
         userId,
-        ...(initialMessage && {
-          messages: {
-            create: {
-              ...initialMessage,
-              status: MessageStatus.COMPLETE,
-            },
-          },
-        }),
       },
-      include: { messages: true },
     });
     return c.json(session, 201);
   });
