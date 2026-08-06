@@ -1,7 +1,7 @@
 import { TextAttributes } from "@opentui/core";
 import { useModel } from "../../providers/model/model-context";
 import { useMode } from "../../providers/mode/mode-context";
-import { Mode } from "@code-sama/database";
+import { Mode } from "@code-sama/shared";
 import { useTheme } from "../../providers/theme/theme-context";
 import { useLayer } from "../../providers/layer/layer-context";
 import { useKeyboard } from "@opentui/react";
@@ -22,7 +22,7 @@ export const StatusBar = () => {
 
   return (
     <box flexDirection="row" gap={1}>
-      <text fg={mode === Mode.PLAN ? colors.planMode : colors.primary}>
+      <text fg={mode === Mode.plan ? colors.planMode : colors.primary}>
         {mode}
       </text>
       <text fg="gray" attributes={TextAttributes.DIM}>

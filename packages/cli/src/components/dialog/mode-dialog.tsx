@@ -1,22 +1,22 @@
-import { Mode } from "@code-sama/database";
 import { DialogSearchList } from "./dialog-search-list";
 import { useCallback } from "react";
 import { useDialog } from "../../providers/dialog/dialog-context";
+import { type ModeType, Mode } from "@code-sama/shared";
 
 interface Props {
-  currentMode: Mode;
-  onSelectMode: (mode: Mode) => void;
+  currentMode: ModeType;
+  onSelectMode: (mode: ModeType) => void;
 }
 
 export const ModeDialog = ({ currentMode, onSelectMode }: Props) => {
   const { close } = useDialog();
 
-  const availableModes: Mode[] = [Mode.BUILD, Mode.PLAN];
-  const getModeLabel = (mode: Mode) => {
-    return mode === Mode.PLAN ? "Plan" : "Build";
+  const availableModes: ModeType[] = [Mode.build, Mode.plan];
+  const getModeLabel = (mode: ModeType) => {
+    return mode === "PLAN" ? "Plan" : "Build";
   };
 
-  const handleSelect = useCallback((selectedMode: Mode) => {
+  const handleSelect = useCallback((selectedMode: ModeType) => {
     onSelectMode(selectedMode);
     close();
   }, []);

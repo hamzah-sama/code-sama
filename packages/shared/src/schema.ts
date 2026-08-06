@@ -1,61 +1,94 @@
-import { z } from "zod";
+import z from "zod";
+import { tool } from "ai";
 
-export const toolCallArgsSchema = z.record(z.string(), z.json());
+export const Mode = {
+  build: "BUILD",
+  plan: "PLAN",
+} as const;
 
-export const messagePartSchema = z.discriminatedUnion("type", [
-  z.object({
-    type: z.literal("reasoning"),
-    text: z.string(),
-  }),
-  z.object({
-    type: z.literal("tool-call"),
-    id: z.string(),
-    name: z.string(),
-    args: toolCallArgsSchema,
-    result: z.string().optional(),
-  }),
-  z.object({
-    type: z.literal("text"),
-    text: z.string(),
-  }),
-]);
+export const modeSchema = z.enum([Mode.build, Mode.plan]);
 
-export const messagePartsSchema = z.array(messagePartSchema);
+export type ModeType = (typeof Mode)[keyof typeof Mode];
 
-export type MessagePart = z.infer<typeof messagePartSchema>;
+export const toolsInputSchema = {
+  readFile: z.object({
+    path: z.string().describe("Relative path of the file to read").default("."),
+  }),
+  writeFile: z.object({
+    path: z.string().describe("Relative path to write"),
+    content: z.string().describe("File contents"),
+  }),
+  editFile: z.object({
+    path: z.string().describe("Relative path to edit"),
+    oldString: z.string().describe("Exact text to replace; must be unique"),
+    newString: z.string().describe("Replacement text"),
+  }),
+  listDirectory: z.object({
+    path: z.string().describe("Relative directory path to list").default("."),
+  }),
+  bash: z.object({
+    command: z.string().describe("The shell command to execute"),
+    description: z
+      .string()
+      .describe("Short description of what the command does")
+      .optional(),
+    timeOut: z.number().describe("Timeout in milliseconds").optional(),
+  }),
+  glob: z.object({
+    pattern: z.string().describe("Glob patterns to match files"),
+    path: z.string().describe("Directory to search from").default("."),
+  }),
+  grep: z.object({
+    pattern: z.string().describe("Regex pattern to search for"),
+    path: z.string().describe("Directory path to search from").default("."),
+    include: z
+      .string()
+      .optional()
+      .describe("Optional glob for files to include"),
+  }),
+} as const;
 
-export const chartStreamEventSchema = z.discriminatedUnion("type", [
-  z.object({
-    type: z.literal("text-delta"),
-    text: z.string(),
+export const readOnlyTools = {
+  readFile: tool({
+    description: "Read a file from the current project directory",
+    inputSchema: toolsInputSchema.readFile,
   }),
-  z.object({
-    type: z.literal("reasoning-delta"),
-    text: z.string(),
+  grep: tool({
+    description:
+      "Search file contents with a regular expression under the current project directory",
+    inputSchema: toolsInputSchema.grep,
   }),
-  z.object({
-    type: z.literal("tool-call"),
-    toolCallId: z.string(),
-    toolCallName: z.string(),
-    args: toolCallArgsSchema,
+  glob: tool({
+    description:
+      "Find files matching a glob pattern under the current project directory",
+    inputSchema: toolsInputSchema.glob,
   }),
-  z.object({
-    type: z.literal("tool-result"),
-    toolCallId: z.string(),
-    result: z.string(),
+  listDirectory: tool({
+    description:
+      "List entries in a directory under the current project directory",
+    inputSchema: toolsInputSchema.listDirectory,
   }),
-  z.object({
-    type: z.literal("done"),
-    messageId: z.string(),
-    durationMs: z.number(),
-  }),
-  z.object({
-    type: z.literal("error"),
-    message: z.string(),
-  }),
-]);
+} as const;
 
+const buildTools = {
+  ...readOnlyTools,
+  writeFile: tool({
+    description: "Create or overwrite file under the current project directory",
+    inputSchema: toolsInputSchema.writeFile,
+  }),
+  editFile: tool({
+    description:
+      "Replace exact text in a file under the current project directory",
+    inputSchema: toolsInputSchema.editFile,
+  }),
+  bash: tool({
+    description: "Run a sheel command in the current project directory",
+    inputSchema: toolsInputSchema.bash,
+  }),
+} as const;
 
-export type ChatStreamEvent = z.infer<typeof chartStreamEventSchema>
+export type AgentTools = typeof buildTools;
 
-
+export const getTools = (modeType: ModeType) => {
+  return modeType === Mode.plan ? readOnlyTools : buildTools;
+};

@@ -1,9 +1,9 @@
-import { Mode } from "@code-sama/database";
+import { Mode, type ModeType } from "@code-sama/shared";
 import { useTheme } from "../../providers/theme/theme-context";
 
 interface Props {
   message: string | null;
-  mode: Mode;
+  mode: ModeType;
 }
 
 export const UserMessage = ({ message, mode }: Props) => {
@@ -11,7 +11,7 @@ export const UserMessage = ({ message, mode }: Props) => {
   return (
     <box width="100%" alignItems="center">
       <box
-        borderColor={mode === Mode.PLAN ? colors.planMode : colors.primary}
+        borderColor={mode === Mode.plan ? colors.planMode : colors.primary}
         border={["left"]}
         width="100%"
       >

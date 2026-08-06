@@ -1,21 +1,16 @@
 import { StatusBar } from "./status-bar";
 import { CommandMenu } from "./../command-menu";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import type { ScrollBoxRenderable, TextareaRenderable } from "@opentui/core";
 import { useTheme } from "../../providers/theme/theme-context";
 import { useMode } from "../../providers/mode/mode-context";
-import { Mode } from "@code-sama/database";
+import { Mode } from "@code-sama/shared";
 import { textAreaKeyBindings } from "../key-bindings";
 import { useLayer } from "../../providers/layer/layer-context";
 import { useCommandMenu } from "../command-menu/hooks/use-command-menu";
 import { useHandleCommand } from "../command-menu/hooks/use-handle-command";
-import {
-  findActiveMention,
-  type MentionMatch,
-} from "../file-mention/find-active-mention";
-import type { MentionCandidate } from "../file-mention/types";
+
 import { getMentionCandidates } from "../file-mention/get-mention-candidates";
-import { useKeyboard } from "@opentui/react";
 import { FileMention } from "../file-mention";
 import { useFileMention } from "../file-mention/use-file-mention";
 
@@ -64,11 +59,11 @@ export const InputBar = ({ onSubmit, sessionId }: Props) => {
     syncMentionMenu(text, textArea.cursorOffset);
   };
 
-  const handleTextareaCursorChange = ()=>{
+  const handleTextareaCursorChange = () => {
     const textArea = textAreaRef.current;
     if (!textArea) return;
     syncMentionMenu(textArea.plainText, textArea.cursorOffset);
-  }
+  };
   useEffect(() => {
     if (!activeMention) {
       setMentionCandidates([]);
@@ -115,7 +110,7 @@ export const InputBar = ({ onSubmit, sessionId }: Props) => {
     onSubmit(text);
 
     textArea.setText("");
-    closeMentionMenu()
+    closeMentionMenu();
   };
 
   useEffect(() => {
@@ -161,7 +156,7 @@ export const InputBar = ({ onSubmit, sessionId }: Props) => {
   return (
     <box
       border={["left"]}
-      borderColor={mode === Mode.BUILD ? colors.primary : colors.planMode}
+      borderColor={mode === Mode.build ? colors.primary : colors.planMode}
     >
       <box
         position="relative"

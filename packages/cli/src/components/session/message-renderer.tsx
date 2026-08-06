@@ -1,6 +1,5 @@
 import type { Message } from "../../hooks/types";
 import { BotMessage } from "../messages/bot-message";
-import { ErrorMessage } from "../messages/error-message";
 import { UserMessage } from "../messages/user-message";
 
 interface Props {
@@ -9,20 +8,22 @@ interface Props {
 
 export const MessageRenderer = ({ message }: Props) => {
   if (message.role === "user") {
-    return <UserMessage message={message.content} mode={message.mode} />;
-  }
-  if (message.role === "error") {
-    return <ErrorMessage message={message.content} />;
+    const text = message.parts
+      .filter((msg) => msg.type === "text")
+      .map((msg) => msg.text)
+      .join("");
+    return (
+      <UserMessage message={text} mode={message.metadata?.mode ?? "BUILD"} />
+    );
   }
 
   return (
     <BotMessage
       parts={message.parts}
-      model={message.model}
-      mode={message.mode}
-      duration={message.duration}
+      model={message.metadata?.model ?? "unknown"}
+      mode={message.metadata?.mode ?? "BUILD"}
+      durationMs={message.metadata?.durationMs}
       streaming={false}
-      interrupted={message.interrupted}
     />
   );
 };

@@ -1,8 +1,7 @@
 {
   "name": "@code-sama/database",
   "exports": {
-    ".": "./src/index.ts",
-    "./enums": "./src/enums.ts"
+    ".": "./src/index.ts"
   },
   "type": "module",
   "private": true,

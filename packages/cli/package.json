@@ -4,20 +4,27 @@
   "type": "module",
   "private": true,
   "devDependencies": {
-    "@types/bun": "latest",
+    "@types/bun": "^1.3.14",
     "@types/react": "^19.2.17",
     "@code-sama/server": "workspace:*"
+  },
+  "bin": {
+    "code-sama": "./bin/code-sama"
+  },
+  "scripts": {
+    "dev": "bun run --watch src/index.tsx",
+    "build": "bun build src/index.tsx --outdir dist --target bun"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
-    "@code-sama/database": "workspace:*",
+    "@ai-sdk/react": "^4.0.53",
     "@code-sama/shared": "workspace:*",
-    "@opentui/core": "^0.4.5",
-    "@opentui/react": "^0.4.5",
+    "@opentui/core": "^0.5.1",
+    "@opentui/react": "^0.5.1",
+    "ai": "^7.0.50",
     "date-fns": "^4.4.0",
-    "eventsource-parser": "^3.1.0",
     "hono": "^4.12.31",
     "open": "^11.0.0",
     "opentui-spinner": "^0.0.7",

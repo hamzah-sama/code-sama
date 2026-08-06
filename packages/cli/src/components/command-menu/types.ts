@@ -1,10 +1,9 @@
-import type { Mode } from "@code-sama/database";
 import type { DialogContextValue } from "../../providers/dialog/type";
 import type {
   ToastContextValue,
   ToastOptions,
 } from "../../providers/toast/type";
-import type { SupportedChatModelName } from "@code-sama/shared";
+import type { ModeType, SupportedChatModelName } from "@code-sama/shared";
 
 export type commandContext = {
   exit: () => void;
@@ -12,8 +11,8 @@ export type commandContext = {
   dialog: DialogContextValue;
   navigate: (url: string, options?: { replace?: boolean }) => void;
   sessionId?: string;
-  mode: Mode;
-  setMode: (mode: Mode) => void;
+  mode: ModeType;
+  setMode: (mode: ModeType) => void;
   model: SupportedChatModelName;
   setModel: (model: SupportedChatModelName) => void;
   homescreen?: boolean;

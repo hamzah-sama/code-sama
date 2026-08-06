@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { SessionData } from "react-router";
-import { mapMessages } from "./utils/mapMessages";
 import { useChat } from "../../hooks/use-chat";
 import { useKeyboard } from "@opentui/react";
 import { MessageRenderer } from "./message-renderer";
@@ -9,36 +8,54 @@ import { useMode } from "../../providers/mode/mode-context";
 import { useModel } from "../../providers/model/model-context";
 import { SessionWrapper } from "./session-wrapper";
 import { useLayer } from "../../providers/layer/layer-context";
+import type { ModeType, SupportedChatModelName } from "@code-sama/shared";
+import type { Message } from "../../hooks/types";
+import { ErrorMessage } from "../messages/error-message";
 
 interface Props {
   session: SessionData;
+  initialPrompt?: {
+    message: string;
+    mode: ModeType;
+    model: SupportedChatModelName;
+  };
 }
 
-export const SessionChat = ({ session }: Props) => {
+export const SessionChat = ({ session, initialPrompt }: Props) => {
   const { mode } = useMode();
   const { model } = useModel();
-  const [initialMessages] = useState(() => mapMessages(session.messages));
+  const [initialMessages] = useState(
+    () => session.messages as unknown as Message[],
+  );
   const { isTopLayer } = useLayer();
-  const { messages, streaming, abort, submit, interrupt } = useChat(
+  const { messages, status, abort, submit, interrupt, error } = useChat(
     session.id,
     initialMessages,
   );
 
+  const hasSubmittedInitialPromptRef = useRef(false);
+
   useEffect(() => {
-    return () => abort();
+    return () => void abort();
   }, [abort]);
 
   //let the user cancel a reply by pressing escape
   useKeyboard((key) => {
-    if (
-      key.name === "escape" &&
-      isTopLayer("base") &&
-      streaming.status === "streaming"
-    ) {
+    if (key.name === "escape" && isTopLayer("base") && status === "streaming") {
       key.preventDefault();
       interrupt();
     }
   });
+
+  useEffect(() => {
+    if (!initialPrompt || hasSubmittedInitialPromptRef.current) return;
+    hasSubmittedInitialPromptRef.current = true;
+    void submit({
+      userText: initialPrompt.message,
+      mode: initialPrompt.mode,
+      model: initialPrompt.model,
+    });
+  }, [submit, initialPrompt]);
 
   return (
     <SessionWrapper
@@ -49,20 +66,13 @@ export const SessionChat = ({ session }: Props) => {
           model,
         })
       }
-      loading={streaming.status === "streaming"}
+      loading={status === "streaming" || status === "submitted"}
       sessionId={session.id}
     >
       {messages.map((msg) => (
         <MessageRenderer key={msg.id} message={msg} />
       ))}
-      {streaming.status === "streaming" && (
-        <BotMessage
-          parts={streaming.parts}
-          model={streaming.model}
-          mode={streaming.mode}
-          streaming={streaming.status === "streaming"}
-        />
-      )}
+      {error && <ErrorMessage message={error.message} />}
     </SessionWrapper>
   );
 };

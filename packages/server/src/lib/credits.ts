@@ -1,6 +1,5 @@
 import {
   findSupportedChatModel,
-  SUPPORTED_CHAT_MODELS,
   type ModelPricing,
 } from "@code-sama/shared";
 import type { LanguageModelUsage } from "ai";

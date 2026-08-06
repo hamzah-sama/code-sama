@@ -11,42 +11,9 @@ model Session {
   id        String    @id @default(uuid())
   userId    String
   title     String
-  cwd       String?
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  messages  Message[]
+  messages  Json     @default("[]")
 
   @@index([userId])
-}
-
-model Message {
-  id        String        @id @default(uuid())
-  role      Role
-  content   String
-  mode      Mode
-  model     String
-  status    MessageStatus
-  parts     Json?
-  duration  Int?
-  createdAt DateTime      @default(now())
-  sessionId String
-  session   Session       @relation(fields: [sessionId], references: [id], onDelete: Cascade)
-
-  @@index([sessionId])
-}
-
-enum Role {
-  USER
-  ASSISTANT
-  ERROR
-}
-
-enum Mode {
-  BUILD
-  PLAN
-}
-
-enum MessageStatus {
-  COMPLETE
-  INTERRUPTED
 }
