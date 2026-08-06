@@ -20,7 +20,7 @@ export const MessageRenderer = ({ message }: Props) => {
   return (
     <BotMessage
       parts={message.parts}
-      model={message.metadata?.mode ?? "unknown"}
+      model={message.metadata?.model ?? "unknown"}
       mode={message.metadata?.mode ?? "BUILD"}
       durationMs={message.metadata?.durationMs}
       streaming={false}

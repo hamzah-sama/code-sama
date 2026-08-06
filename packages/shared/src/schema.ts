@@ -12,7 +12,7 @@ export type ModeType = (typeof Mode)[keyof typeof Mode];
 
 export const toolsInputSchema = {
   readFile: z.object({
-    path: z.string().describe("Relative directory path to list").default("."),
+    path: z.string().describe("Relative path of the file to read").default("."),
   }),
   writeFile: z.object({
     path: z.string().describe("Relative path to write"),
@@ -32,7 +32,7 @@ export const toolsInputSchema = {
       .string()
       .describe("Short description of what the command does")
       .optional(),
-    timeOut: z.number().describe("timeout in miliseconds").optional(),
+    timeOut: z.number().describe("Timeout in milliseconds").optional(),
   }),
   glob: z.object({
     pattern: z.string().describe("Glob patterns to match files"),
@@ -55,7 +55,7 @@ export const readOnlyTools = {
   }),
   grep: tool({
     description:
-      "List entries in a directory under the current project directory",
+      "Search file contents with a regular expression under the current project directory",
     inputSchema: toolsInputSchema.grep,
   }),
   glob: tool({
@@ -65,7 +65,7 @@ export const readOnlyTools = {
   }),
   listDirectory: tool({
     description:
-      "Search a file contents with a reguler expression under the current project directory",
+      "List entries in a directory under the current project directory",
     inputSchema: toolsInputSchema.listDirectory,
   }),
 } as const;

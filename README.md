@@ -425,7 +425,7 @@ Base URL: `http://localhost:3000`. All authenticated routes take `Authorization:
 ```jsonc
 {
   "id": "session-uuid",
-  "mode": "BUILD",                    // "BUILD" | "PLAN"
+  "mode": "build",                    // "build" | "plan"
   "model": "claude-sonnet-4-6",       // must be in SUPPORTED_CHAT_MODELS
   "messages": [                       // array, min length 1
     {

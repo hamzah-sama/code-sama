@@ -34,7 +34,6 @@ const submitSchema = z.object({
     .refine((name) => isSupportedChatModel(name), "Unsupported model"),
 });
 
-
 const submitValidator = zValidator("json", submitSchema, (result, c) => {
   if (!result.success) {
     return c.json(
@@ -143,7 +142,14 @@ const app = new Hono().post(
 
       async onFinish(event) {
         if (event.isAborted) return;
-        if (hasPendingToolsCall(event.responseMessage)) return;
+        if (!hasPendingToolsCall(event.responseMessage)) {
+          await db.session.update({
+            where: { id },
+            data: {
+              messages: event.messages as unknown as Prisma.InputJsonValue,
+            },
+          });
+        }
 
         await db.session.update({
           where: {
@@ -173,7 +179,6 @@ const app = new Hono().post(
             error,
             sessionId: id,
             messageId: event.responseMessage.id,
-            userId,
           });
         }
       },

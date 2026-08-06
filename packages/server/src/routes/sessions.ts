@@ -15,7 +15,7 @@ const createSessionValidator = zValidator(
   createSessionSchema,
   (result, c) => {
     if (!result.success) {
-      return c.json({ error: "Invalid request body wkwk" }, 400);
+      return c.json({ error: "Invalid request body" }, 400);
     }
   },
 );
